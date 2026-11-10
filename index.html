@@ -5,17 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ساحة ألعاب حبنا ♥️🔥</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
-<!--
-  خطوات التشغيل (5 دقايق):
-  1) console.firebase.google.com ← Add project ← Build ← Realtime Database ← Create (Test mode).
-     وفي تاب Rules حط:  {"rules":{"rooms":{".read":true,".write":true}}}  (عشان متنتهيش بعد 30 يوم)
-  2) Project settings ← Your apps ← Web (</>) ← انسخ firebaseConfig وحطه مكان FB تحت (لازم databaseURL).
-  3) ارفع الملف ده (سمّيه index.html) على GitHub Pages أو Netlify Drop أو Cloudflare Pages.
-  4) في Index.html خلّي openGamePage للألعاب الأربعة تفتح:
-     window.open("https://لينك-موقعك/?user="+encodeURIComponent(currentUser.name)+"&partner="+encodeURIComponent(currentUser.partnerName)+"&mode="+modeName+"&home="+encodeURIComponent(baseUrl),'_blank')
-     (modeName = telepathy | whofirst | wheel | scenario)
-  5) الأسئلة: استبدل المصفوفات الأربعة تحت بتوعك القديمة زي ما هي (نفس الأسماء والشكل).
--->
 <style>
 :root{--c:#ff2a5f;--g:#ffd166;--r:#ff758f;--b:#ffe0e9;--line:rgba(255,117,143,.38)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -91,7 +80,15 @@ textarea{width:100%;height:86px;margin-bottom:10px;padding:12px;border-radius:18
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const FB={apiKey:"",authDomain:"",databaseURL:"",projectId:"",appId:""}; // ← حط إعدادات Firebase هنا
+const FB = {
+  apiKey: "AIzaSyCmwupjdLgNzLFyOxNuTTRFgp0yVoyK-YI",
+  authDomain: "love-games-b3018.firebaseapp.com",
+  databaseURL: "https://love-games-b3018-default-rtdb.firebaseio.com",
+  projectId: "love-games-b3018",
+  storageBucket: "love-games-b3018.firebasestorage.app",
+  messagingSenderId: "1005323770246",
+  appId: "1:1005323770246:web:57f360319fe698d1c83407"
+};
 
 /* ===== الأسئلة: استبدلها بالمصفوفات القديمة بتاعتك ===== */
 const telepathyBank=[
@@ -177,7 +174,7 @@ $('snd').onclick=send;
 $('inp').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 $('inp').addEventListener('input',()=>{tg(true);clearTimeout(tt);tt=setTimeout(()=>tg(false),2500)});
 
-draw(); // الواجهة بتظهر فورًا قبل أي اتصال
+draw();
 try{
  if(!FB.databaseURL)throw new Error('حط إعدادات Firebase في أول السكريبت (FB) عشان اللعب يتزامن');
  firebase.initializeApp(FB);db=firebase.database();
