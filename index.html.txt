@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ساحة ألعاب حبنا ♥️🔥</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
+<!--
+  خطوات التشغيل (5 دقايق):
+  1) console.firebase.google.com ← Add project ← Build ← Realtime Database ← Create (Test mode).
+     وفي تاب Rules حط:  {"rules":{"rooms":{".read":true,".write":true}}}  (عشان متنتهيش بعد 30 يوم)
+  2) Project settings ← Your apps ← Web (</>) ← انسخ firebaseConfig وحطه مكان FB تحت (لازم databaseURL).
+  3) ارفع الملف ده (سمّيه index.html) على GitHub Pages أو Netlify Drop أو Cloudflare Pages.
+  4) في Index.html خلّي openGamePage للألعاب الأربعة تفتح:
+     window.open("https://لينك-موقعك/?user="+encodeURIComponent(currentUser.name)+"&partner="+encodeURIComponent(currentUser.partnerName)+"&mode="+modeName+"&home="+encodeURIComponent(baseUrl),'_blank')
+     (modeName = telepathy | whofirst | wheel | scenario)
+  5) الأسئلة: استبدل المصفوفات الأربعة تحت بتوعك القديمة زي ما هي (نفس الأسماء والشكل).
+-->
+<style>
+:root{--c:#ff2a5f;--g:#ffd166;--r:#ff758f;--b:#ffe0e9;--line:rgba(255,117,143,.38)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:12px 10px 40px;font-family:Cairo,system-ui,sans-serif;color:#fff;text-align:center;min-height:100vh;background:radial-gradient(circle at 50% 0,#4a0823,#2b0514 45%,#140209)}
+.w{max-width:720px;margin:auto}
+h1{font-size:30px;margin:6px 0 14px;color:var(--b);text-shadow:0 0 18px rgba(255,42,95,.8)}
+button{font-family:inherit;cursor:pointer}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;border-radius:22px;border:1px solid var(--line);background:rgba(20,2,9,.8);margin-bottom:16px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px;border-radius:16px;border:1px solid transparent;background:rgba(255,255,255,.05);color:var(--b);font-size:13px;font-weight:700;transition:.2s}
+.tab i{font-style:normal;font-size:20px}
+.tab.on{background:linear-gradient(135deg,var(--c),#c9184a);border-color:var(--g);transform:translateY(-2px);box-shadow:0 4px 15px rgba(255,42,95,.5)}
+.stage{min-height:300px;padding:18px 14px;border-radius:26px;border:2px solid var(--line);background:rgba(48,8,24,.85);box-shadow:0 15px 40px rgba(0,0,0,.5),inset 0 0 25px rgba(255,42,95,.08)}
+.bar{display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.pill{padding:4px 12px;border-radius:20px;border:1px solid var(--g);color:var(--g);font-size:12px;font-weight:800;background:rgba(255,209,102,.12)}
+.pill2{padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.1);font-size:12px;font-weight:700}
+.q{padding:16px 12px;margin-bottom:14px;border-radius:22px;border:3px solid var(--c);background:linear-gradient(135deg,#fff,#fff0f5);color:#4a0823;font-size:20px;font-weight:800;line-height:1.6;box-shadow:0 10px 30px rgba(255,42,95,.25)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:14px}
+.opt{padding:12px;border-radius:18px;border:1.5px solid rgba(255,179,198,.4);background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-weight:700;transition:.18s}
+.opt:hover{background:rgba(255,42,95,.25)}
+.opt.sel{background:linear-gradient(135deg,var(--c),#a4133c);border-color:var(--g);box-shadow:0 0 18px rgba(255,42,95,.6);transform:scale(1.02)}
+.rev{padding:14px;margin:0 0 12px;border-radius:20px;border:2px solid var(--g);background:rgba(20,2,9,.88);line-height:1.8;animation:pop .35s}
+.hide{visibility:hidden}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.go{padding:10px 24px;border:0;border-radius:25px;background:linear-gradient(135deg,var(--g),#f4a261);color:#2b0514;font-size:15px;font-weight:800;box-shadow:0 5px 15px rgba(255,209,102,.35)}
+.go.alt{background:rgba(255,255,255,.12);color:var(--b);border:1px solid var(--line);box-shadow:none}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.rps{width:86px;height:90px;border-radius:20px;border:2px solid var(--line);background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.rps b{font-size:30px}
+.rps.sel,.rps:hover{background:var(--c);border-color:var(--g);transform:translateY(-3px)}
+.wheel{position:relative;width:210px;height:210px;margin:6px auto 14px}
+.ptr{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:26px;z-index:2}
+.disc{width:100%;height:100%;border-radius:50%;border:5px solid var(--g);box-shadow:0 0 28px rgba(255,42,95,.6);background:conic-gradient(#ff2a5f 0deg 45deg,#7209b7 45deg 90deg,#c9184a 90deg 135deg,#f72585 135deg 180deg,#5c001e 180deg 225deg,#b5179e 225deg 270deg,#9d0208 270deg 315deg,#ff4d6d 315deg 360deg);transition:transform 3.6s cubic-bezier(.12,.8,.18,1);display:grid;place-items:center}
+.cap{width:52px;height:52px;border-radius:50%;border:3px solid #4a0823;background:radial-gradient(#fff,var(--g));color:#4a0823;font-size:22px}
+textarea{width:100%;height:86px;margin-bottom:10px;padding:12px;border-radius:18px;border:2px solid var(--c);background:#fff;color:#2b0514;font:700 15px Cairo,sans-serif;resize:none;outline:0}
+.chat{display:flex;flex-direction:column;height:52vh;min-height:360px;margin-top:14px;border-radius:24px;border:1.5px solid var(--line);background:rgba(18,3,10,.92);overflow:hidden}
+.msgs{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:12px}
+.m{position:relative;max-width:84%;padding:8px 14px;border-radius:18px;font-weight:600;line-height:1.5;word-break:break-word}
+.m small{display:block;font-size:11px;opacity:.7}
+.me{align-self:flex-start;background:linear-gradient(135deg,#ff2a5f,#c9184a);border-top-right-radius:4px}
+.you{align-self:flex-end;background:#2f0b1c;border:1px solid var(--line);border-top-left-radius:4px;text-align:left;color:var(--b);cursor:pointer}
+.rx{position:absolute;bottom:-11px;left:-4px;padding:1px 6px;border-radius:50%;background:#1e0410;border:1px solid var(--c)}
+.typ{display:none;align-self:flex-end;margin:0 12px 6px;padding:10px 16px;border-radius:16px;background:#2f0b1c;gap:5px}
+.typ.show{display:inline-flex}
+.typ i{width:8px;height:8px;border-radius:50%;background:var(--c);animation:bn 1.4s infinite both}
+.typ i:nth-child(2){animation-delay:.16s}.typ i:nth-child(3){animation-delay:.32s}
+@keyframes bn{0%,80%,100%{transform:none;opacity:.4}40%{transform:translateY(-6px);opacity:1}}
+.cin{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(255,117,143,.25);background:#140209}
+.cin input{flex:1;min-width:0;padding:11px 16px;border-radius:25px;border:1px solid var(--c);background:#fff;color:#000;font:700 15px Cairo,sans-serif;outline:0}
+.home{margin-top:18px;padding:9px 28px;border-radius:25px;border:2px solid var(--c);background:rgba(20,2,9,.85);color:var(--b);font-size:16px;font-weight:700}
+#err{position:fixed;inset:auto 10px 10px;padding:10px;border-radius:12px;background:#9d0208;font-size:13px;display:none;z-index:9}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>ساحة ألعاب حبنا ♥️🔥</h1>
+  <div class="tabs">
+    <button class="tab" data-a="mode" data-v="telepathy"><i>🧠</i>التخاطر</button>
+    <button class="tab" data-a="mode" data-v="whofirst"><i>😂</i>مين فينا؟</button>
+    <button class="tab" data-a="mode" data-v="wheel"><i>🎡</i>عجلة الدلال</button>
+    <button class="tab" data-a="mode" data-v="scenario"><i>🏡</i>لو كنا...</button>
+  </div>
+  <div class="stage" id="stage"></div>
+  <div class="chat">
+    <div class="msgs" id="msgs"></div>
+    <div class="typ" id="typ"><i></i><i></i><i></i></div>
+    <div class="cin"><input id="inp" placeholder="اتكلموا واضحكوا هنا… 💌" autocomplete="off"><button class="go" id="snd">إرسال</button></div>
+  </div>
+  <button class="home" data-a="home">الرجوع للبيت 🏠♥️</button>
+</div>
+<div id="err"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const FB={apiKey:"",authDomain:"",databaseURL:"",projectId:"",appId:""}; // ← حط إعدادات Firebase هنا
+
+/* ===== الأسئلة: استبدلها بالمصفوفات القديمة بتاعتك ===== */
+const telepathyBank=[
+ {q:"لو قررنا نهرب سوا دلوقتي، أول مكان هنروحه؟",opts:["البحر قدام الموج 🌊","كافيه هادي ☕","تمشية بالعربية بالليل 🚗","نقعد في البيت نطلب أكل 🍕"]},
+ {q:"لو هنتفرج على فيلم الليلة، هنختار إيه؟",opts:["رومانسي ♥️","كوميدي 😂","أكشن 🔥","رعب 👻"]},
+ {q:"إيه أكتر حاجة بتصالحنا في ثانية؟",opts:["كلمة حلوة وحضن 🫂","أكلة بنحبها 🍫","خروجة فجأة 🎡","هدية بسيطة 🎁"]}
+];
+const whoFirstBank=["مين فينا اللي بيصالح التاني الأول حتى لو مش غلطان؟ 🥺","مين فينا اللي هينسى المفاتيح بره البيت؟ 😂","مين فينا اللي بيطول قدام المراية أكتر؟ 🪞","مين فينا اللي هيدلع ولادنا ويبوظ خطط التربية؟ 🧸"];
+const wheelDaresBank=["🎙️ ابعتلي فويس نوت تقولي فيه بحبك بطريقتك!","💌 اكتبلي في الشات 3 حاجات بتعشقهم في شخصيتي!","🍫 عليك عزومة شوكولاتة أو قهوة في أول خروجة!","📸 ابعتلي سيلفي دلوقتي وإنت بتبتسم عشاني!"];
+const scenarioBank=["لو معانا 100 ألف جنيه هدية نصرفها سوا في أسبوع للمتعة بس.. هنعمل بيها إيه؟ 💸✈️","لو لقينا نفسنا في كابينة خشب وسط المطر 3 أيام.. هنقضيهم إزاي؟ 🌧️🔥","اوصفلي يومنا المثالي بعد 5 سنين من أول ما نصحى لحد ما ننام! 💍🌅"];
+/* ===================================================== */
+
+const Q=new URLSearchParams(location.search),$=i=>document.getElementById(i);
+const K=n=>String(n).replace(/[.#$\[\]\/]/g,'_');
+const ME=Q.get('user')||'أنا',YOU=Q.get('partner')||'شريكي',MK=K(ME),YK=K(YOU);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let db,base='rooms/'+K(Q.get('room')||'main')+'/',G={},mode=Q.get('mode')||'telepathy',lastSpin,rot=0,tt;
+const R=p=>db.ref(base+'g/'+p),stage=h=>{$('stage').innerHTML=h};
+const EM={rock:'🪨',paper:'📄',scissors:'✂️'};
+const bar=(a,b)=>`<div class="bar"><span class="pill">${a}</span><span class="pill2">${b}</span></div>`;
+const wait=(ok,yo,my,verb)=>ok?'اتكشفت النتيجة ✨':yo?`✅ ${esc(YOU)} ${verb} ومستنيك`:my?`⏳ مستني ${esc(YOU)}`:'اختار في السر';
+
+function nxt(len,u,cur){u=Array.isArray(u)?u:[];let a=[...Array(len).keys()].filter(i=>!u.includes(i)&&i!==cur);if(!a.length){u=[];a=[...Array(len).keys()].filter(i=>i!==cur)}if(!a.length)a=[0];const n=a[Math.random()*a.length|0];return{q:n,u:u.concat(n)}}
+
+function dTele(t){const L=telepathyBank,q=L[(t.q||0)%L.length],c=t.c||{},my=c[MK],yo=c[YK],ok=my&&yo,rate=t.t?Math.round((t.m||0)/t.t*100):100;
+ stage(bar(`🧠 التخاطر ${rate}% (${t.m||0}/${t.t||0})`,wait(ok,yo,my,'اختار'))
+ +`<div class="q">${esc(q.q)}</div><div class="opts">${q.opts.map((o,i)=>`<button class="opt ${my===o?'sel':''}" data-a="tp" data-v="${i}">${esc(o)}</button>`).join('')}</div>`
+ +(ok?`<div class="rev"><b>${my===yo?'🎉 تطابق! قلوبكم على قلب بعض ♥️':'😄 اختلفتوا المرة دي'}</b><br>اختيارك: ${esc(my)}<br>اختيار ${esc(YOU)}: ${esc(yo)}</div>`:'')
+ +`<button class="go" data-a="tn">سؤال جديد 🔄</button>`)}
+
+function dWho(w){const L=whoFirstBank,v=w.v||{},my=v[MK],yo=v[YK],ok=my&&yo;
+ stage(bar('😂 مين فينا اللي...؟',wait(ok,yo,my,'صوّت'))
+ +`<div class="q">${esc(L[(w.q||0)%L.length])}</div><div class="opts">`
+ +[ME,YOU].map((n,i)=>`<button class="opt ${my===n?'sel':''}" data-a="wv" data-v="${i}">${i?'💑':'🙋'} ${esc(n)}</button>`).join('')+`</div>`
+ +(ok?`<div class="rev"><b>${my===yo?`😂 إجماع على ${esc(my)}!`:'😄 كل واحد شاور على التاني!'}</b><br>تصويتك: ${esc(my)} | ${esc(YOU)}: ${esc(yo)}</div>`:'')
+ +`<button class="go" data-a="wn">الموقف اللي بعده 🔄</button>`)}
+
+function dWheel(w){const r=w.r||{},my=r[MK],win=w.win?(w.win===MK?ME:YOU):'';let from=rot,anim=false;
+ if(w.spin&&w.spin!==lastSpin){lastSpin=w.spin;rot=rot-rot%360+2160-((w.slice||0)*45+22.5);anim=true}
+ const ctl=w.dare?`<div class="rev ${anim?'hide':''}" id="res"><small>حكم الدلال لصالح <b>${esc(win)}</b>:</small><div style="font-size:19px;font-weight:800;line-height:1.6">${esc(w.dare)}</div></div><div class="row"><button class="go" data-a="sp">لف تاني 🎡</button><button class="go alt" data-a="wr">جولة جديدة ✂️</button></div>`
+ :win?`<p class="pill" style="display:inline-block">🎉 ${esc(win)} كسب الجولة!</p><br><br><button class="go" data-a="sp">🎡 لف العجلة</button>`
+ :`<p style="margin:4px 0;color:var(--g);font-weight:700">${esc(w.msg||'العبوا حجر ورقة مقص أو لف العجلة مباشرة')}</p><div class="row">${['rock','paper','scissors'].map((m,i)=>`<button class="rps ${my===m?'sel':''}" data-a="rp" data-v="${m}"><b>${EM[m]}</b>${['حجر','ورقة','مقص'][i]}</button>`).join('')}</div><br><button class="go" data-a="sp">🎡 لف العجلة دلوقتي</button>`;
+ stage(bar('🎡 عجلة الأحكام والدلال',win?'الفايز: '+esc(win):'اضغط للف العجلة')+`<div class="wheel"><div class="ptr">🔻</div><div class="disc" id="disc" style="transform:rotate(${from}deg)"><button class="cap" data-a="sp">♥️</button></div></div>`+ctl);
+ if(anim){requestAnimationFrame(()=>requestAnimationFrame(()=>{const d=$('disc');if(d)d.style.transform=`rotate(${rot}deg)`}));setTimeout(()=>{const e=$('res');if(e)e.classList.remove('hide')},3700)}}
+
+function dScn(s){const L=scenarioBank,a=s.a||{},my=a[MK],yo=a[YK],ok=my&&yo;
+ stage(bar('🏡 لو كنا في الموقف ده',wait(ok,yo,my,'كتب'))
+ +`<div class="q">${esc(L[(s.q||0)%L.length])}</div>`
+ +(ok?`<div class="rev" style="text-align:right"><small style="color:var(--g)">💌 ${esc(ME)}</small><div style="white-space:pre-wrap">${esc(my)}</div><hr style="border:0;border-top:1px dashed #fff3"><small style="color:var(--r)">💌 ${esc(YOU)}</small><div style="white-space:pre-wrap">${esc(yo)}</div></div>`
+ :my?'':`<textarea id="sbox" placeholder="اكتب تخيلك هنا في السر... 💌"></textarea><div class="row"><button class="go" data-a="ss">إرسال سري 🔒</button></div><br>`)
+ +`<button class="go alt" data-a="sn">سيناريو جديد 🔄</button>`)}
+
+function draw(){
+ if(mode==='scenario'&&document.activeElement&&document.activeElement.id==='sbox')return;
+ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===mode));
+ ({telepathy:dTele,whofirst:dWho,wheel:dWheel,scenario:dScn}[mode]||dTele)(G[mode]||{})}
+
+const act={
+ mode(m){mode=m;draw()},
+ tp(i){const o=telepathyBank[((G.telepathy||{}).q||0)%telepathyBank.length].opts[i];R('telepathy').transaction(t=>{t=t||{};t.c=t.c||{};if(Object.keys(t.c).length>=2)return t;t.c[MK]=o;const v=Object.values(t.c);if(v.length==2){t.t=(t.t||0)+1;if(v[0]===v[1])t.m=(t.m||0)+1}return t})},
+ tn(){R('telepathy').transaction(t=>{t=t||{};return Object.assign(nxt(telepathyBank.length,t.u,t.q),{m:t.m||0,t:t.t||0})})},
+ wv(i){const n=i?YOU:ME;R('whofirst').transaction(w=>{w=w||{};w.v=w.v||{};if(Object.keys(w.v).length<2)w.v[MK]=n;return w})},
+ wn(){R('whofirst').transaction(w=>nxt(whoFirstBank.length,(w||{}).u,(w||{}).q))},
+ rp(m){R('wheel').transaction(w=>{w=w||{};if(w.win)return w;w.r=w.r||{};w.r[MK]=m;const k=Object.keys(w.r);
+  if(k.length==2){const x=w.r[k[0]],y=w.r[k[1]],tie=x===y,f=(x=='rock'&&y=='scissors')||(x=='paper'&&y=='rock')||(x=='scissors'&&y=='paper');delete w.r;w.msg=EM[x]+' ضد '+EM[y]+(tie?' — تعادل! العبوا تاني ⚡':'');if(!tie)w.win=f?k[0]:k[1]}return w})},
+ sp(){R('wheel').transaction(w=>{const s=Math.random()*8|0;return{win:(w||{}).win||MK,spin:Date.now(),slice:s,dare:wheelDaresBank[s%wheelDaresBank.length]}})},
+ wr(){R('wheel').set(null)},
+ ss(){const t=($('sbox')||{}).value;if(!t||!t.trim())return;R('scenario').transaction(s=>{s=s||{};s.a=s.a||{};if(Object.keys(s.a).length<2)s.a[MK]=t.trim();return s})},
+ sn(){R('scenario').transaction(s=>nxt(scenarioBank.length,(s||{}).u,(s||{}).q))},
+ rx(k){db.ref(base+'chat/'+k+'/r').transaction(r=>({'':'❤️','❤️':'🥺','🥺':'😂','😂':''}[r||'']))},
+ home(){const h=Q.get('home');h?location.href=h:window.close()}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&act[b.dataset.a])act[b.dataset.a](b.dataset.v)});
+
+const tg=on=>{if(db)db.ref(base+'typing/'+MK).set(on)};
+function send(){const i=$('inp'),t=i.value.trim();if(!t||!db)return;i.value='';db.ref(base+'chat').push({u:ME,t,ts:firebase.database.ServerValue.TIMESTAMP});tg(false)}
+function showChat(s){const el=$('msgs'),low=el.scrollHeight-el.scrollTop-el.clientHeight<70;let h='';
+ s.forEach(c=>{const m=c.val(),me=m.u===ME;h+=`<div class="m ${me?'me':'you'}"${me?'':` data-a="rx" data-v="${c.key}"`}>${me?'':`<small>${esc(m.u)}</small>`}${esc(m.t)}${m.r?`<span class="rx">${m.r}</span>`:''}</div>`});
+ el.innerHTML=h;if(low)el.scrollTop=el.scrollHeight}
+function fail(m){const e=$('err');e.textContent='⚠️ '+m;e.style.display='block'}
+window.onerror=m=>fail(m);
+$('snd').onclick=send;
+$('inp').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+$('inp').addEventListener('input',()=>{tg(true);clearTimeout(tt);tt=setTimeout(()=>tg(false),2500)});
+
+draw(); // الواجهة بتظهر فورًا قبل أي اتصال
+try{
+ if(!FB.databaseURL)throw new Error('حط إعدادات Firebase في أول السكريبت (FB) عشان اللعب يتزامن');
+ firebase.initializeApp(FB);db=firebase.database();
+ let first=true;
+ db.ref(base+'g').on('value',s=>{G=s.val()||{};if(first){first=false;const w=G.wheel||{};lastSpin=w.spin||0;if(w.spin)rot=2160-((w.slice||0)*45+22.5)}draw()});
+ db.ref(base+'chat').limitToLast(80).on('value',showChat);
+ db.ref(base+'typing/'+YK).on('value',s=>$('typ').classList.toggle('show',s.val()===true));
+ db.ref(base+'typing/'+MK).onDisconnect().set(false);
+}catch(e){fail(e.message)}
+</script>
+</body>
+</html>
