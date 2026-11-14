@@ -58,6 +58,12 @@ textarea{width:100%;height:86px;margin-bottom:10px;padding:12px;border-radius:18
 #err{position:fixed;inset:auto 10px 10px;padding:10px;border-radius:12px;background:#9d0208;font-size:13px;display:none;z-index:99}
 #authGate{position:fixed;inset:0;background:radial-gradient(circle at 50% 0,#4a0823,#140209);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .auth-card{max-width:420px;width:100%;background:rgba(48,8,24,.92);border:2px solid var(--g);border-radius:26px;padding:28px 20px;box-shadow:0 15px 40px rgba(0,0,0,.7)}
+.rq{border-right:4px solid var(--g);background:rgba(0,0,0,.25);border-radius:10px;padding:4px 8px;margin-bottom:5px;font-size:12px;text-align:right;max-height:3.6em;overflow:hidden}
+.rq b{display:block;font-size:11px;color:var(--g)}
+.ri{cursor:pointer;opacity:.7;font-size:13px;margin-inline-start:6px}
+.rbar{display:none;align-items:center;gap:8px;padding:8px 14px;background:#240a14;border-top:1px solid var(--line);border-right:4px solid var(--c);font-size:13px;text-align:right}
+.rbar span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rbar button{background:none;border:0;color:var(--b);font-size:16px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -86,6 +92,7 @@ textarea{width:100%;height:86px;margin-bottom:10px;padding:12px;border-radius:18
   <div class="chat">
     <div class="msgs" id="msgs"></div>
     <div class="typ" id="typ"><i></i><i></i><i></i></div>
+    <div class="rbar" id="rbar"></div>
     <div class="cin"><input id="inp" placeholder="اتكلموا واضحكوا هنا… 💌" autocomplete="off"><button class="go" id="snd">إرسال</button></div>
   </div>
   <button class="home" data-a="home">الرجوع للبيت 🏠♥️</button>
@@ -464,9 +471,18 @@ const act={
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&act[b.dataset.a])act[b.dataset.a](b.dataset.v)});
 
 const tg=on=>{if(db)db.ref(base+'typing/'+MK).set(on)};
-function send(){const i=$('inp'),t=i.value.trim();if(!t||!db)return;i.value='';db.ref(base+'chat').push({u:ME,t,ts:firebase.database.ServerValue.TIMESTAMP});tg(false)}
+let rep=null,CM={};
+function setRep(k){const m=CM[k];if(!m)return;rep={u:m.u,t:String(m.t).slice(0,120)};$('rbar').innerHTML=`<span><b>${esc(m.u)}</b>: ${esc(rep.t)}</span><button data-a="norep">✕</button>`;$('rbar').style.display='flex';$('inp').focus()}
+function noRep(){rep=null;$('rbar').style.display='none'}
+act.rep=setRep;act.norep=noRep;
+function send(){const i=$('inp'),t=i.value.trim();if(!t||!db)return;i.value='';const o={u:ME,t,ts:firebase.database.ServerValue.TIMESTAMP};if(rep)o.rp=rep;db.ref(base+'chat').push(o);noRep();tg(false)}
+(function(){const a=$('msgs');let x0,y0,el,dx=0,sw=false;
+ a.addEventListener('touchstart',e=>{el=e.target.closest('[data-k]');if(!el)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;sw=false},{passive:true});
+ a.addEventListener('touchmove',e=>{if(!el)return;const x=e.touches[0].clientX-x0,y=e.touches[0].clientY-y0;if(!sw&&Math.abs(x)>10&&Math.abs(x)>Math.abs(y)*1.5)sw=true;if(sw){dx=Math.max(-90,Math.min(90,x));el.style.transform=`translateX(${dx}px)`}},{passive:true});
+ a.addEventListener('touchend',()=>{if(!el)return;const t=el;el=null;if(sw&&Math.abs(dx)>60)setRep(t.dataset.k);t.style.transition='transform .2s';t.style.transform='';setTimeout(()=>t.style.transition='',220);sw=false});
+ a.addEventListener('touchcancel',()=>{if(!el)return;el.style.transform='';el=null;sw=false})})();
 function showChat(s){const el=$('msgs'),low=el.scrollHeight-el.scrollTop-el.clientHeight<70;let h='';
- s.forEach(c=>{const m=c.val();if(m.u==='system'){h+=`<div class="sys">${esc(m.t)}</div>`;return;}const me=m.u===ME;h+=`<div class="m ${me?'me':'you'}"${me?'':` data-a="rx" data-v="${c.key}"`}>${me?'':`<small>${esc(m.u)}</small>`}${esc(m.t)}${m.r?`<span class="rx">${m.r}</span>`:''}</div>`});
+ s.forEach(c=>{const m=c.val();if(m.u==='system'){h+=`<div class="sys">${esc(m.t)}</div>`;return;}const me=m.u===ME;CM[c.key]=m;h+=`<div class="m ${me?'me':'you'}" data-k="${c.key}"${me?'':` data-a="rx" data-v="${c.key}"`}>${m.rp?`<div class="rq"><b>${esc(m.rp.u)}</b>${esc(m.rp.t)}</div>`:''}${me?'':`<small>${esc(m.u)}</small>`}${esc(m.t)}<span class="ri" data-a="rep" data-v="${c.key}">↩</span>${m.r?`<span class="rx">${m.r}</span>`:''}</div>`});
  el.innerHTML=h;if(low)el.scrollTop=el.scrollHeight}
 function fail(m){const e=$('err');e.textContent='⚠️ '+m;e.style.display='block'}
 window.onerror=m=>fail(m);
