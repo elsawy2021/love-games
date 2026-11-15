@@ -79,7 +79,7 @@ const ROOT='rooms/house_3d/',Q=new URLSearchParams(location.search),$=i=>documen
 const K=n=>String(n).replace(/[.#$\[\]\/]/g,'_'),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sn=v=>Math.round(v*20)/20,toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3500)};
 window.onerror=m=>{const e=$('err');e.textContent='⚠️ '+m;e.style.display='block'};
-let ME=Q.get('user'),YOU=Q.get('partner'),db=null,ref=null,D={items:{},walls:{},floors:{},ceilings:{},palette:[]},slot=1,hist=[],redo=[],sel=null,mode='orbit',ambMode=1,ceilMode=0,tape=0,tp=[],PH={},IM={},WG={},WJ={},FL={},FJ={},CL={},CJ={},G,bh=null,wsel=null,tab='app';
+let ME=Q.get('user'),YOU=Q.get('partner'),db=null,ref=null,D={items:{},walls:{},floors:{},ceilings:{},palette:[]},slot=1,hist=[],redo=[],sel=null,mode='orbit',ambMode=0,ceilMode=0,tape=0,tp=[],PH={},IM={},WG={},WJ={},FL={},FJ={},CL={},CJ={},G,bh=null,wsel=null,tab='app';
 
 /* ===== عبارات الدفء النفسي ===== */
 const WARM_QUOTES=[
@@ -98,8 +98,10 @@ setInterval(()=>{
 
 /* ===== المشهد والإضاءة الدافئة ===== */
 const RN=new THREE.WebGLRenderer({canvas:$('c'),antialias:true});RN.setPixelRatio(Math.min(devicePixelRatio,2));RN.shadowMap.enabled=true;RN.outputEncoding=THREE.sRGBEncoding;
-const S=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(55,1,.05,300),root=new THREE.Group(),CLG=new THREE.Group(),LB=new THREE.Group();S.add(root,CLG,LB);
-const hemi=new THREE.HemisphereLight(0xfff5eb,0x997766,.75),sun=new THREE.DirectionalLight(0xffdfba,.95);
+const S=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(55,1,.05,300),root=new THREE.Group(),CLG=new THREE.Group(),LB=new THREE.Group();
+S.background=new THREE.Color(0xd7eaf8);
+S.add(root,CLG,LB);
+const hemi=new THREE.HemisphereLight(0xfff5eb,0x997766,.78),sun=new THREE.DirectionalLight(0xffdfba,.95);
 sun.position.set(14,22,11);sun.target.position.set(7,0,4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-12,right:12,top:12,bottom:-12,far:70});sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.0005;S.add(hemi,sun,sun.target);
 const gnd=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0xd8c6b8,roughness:.9}));gnd.rotation.x=-Math.PI/2;gnd.position.set(7,-.07,4);gnd.receiveShadow=true;S.add(gnd);
 function rs(){RN.setSize(innerWidth,innerHeight,false);CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix()}addEventListener('resize',rs);rs();
@@ -298,12 +300,10 @@ function buildCeiling(z){
  const W=x2-x1,D_z=z2-z1,cx=(x1+x2)/2,cz=(z1+z2)/2;
  const g=new THREE.Group();g.position.set(cx,2.7,cz);
 
- // بلاطة السقف العلوية (تظهر من الأسفل دائماً وفي الوضع الكامل)
  const slabMat=mat(colHex,{roughness:.85});
  const slab=new THREE.Mesh(new THREE.BoxGeometry(W-.04,.04,D_z-.04),slabMat);
  slab.position.y=.02;slab.userData.isSlab=1;g.add(slab);
 
- // إطار الجبس بورد الساقط داير ما يدور الغرفة
  const bw=Math.min(.38,Math.min(W,D_z)*.22),bh=.1;
  const gMat=mat(colHex,{roughness:.7});
  const addFrame=(mMat,dropH,wB)=>{
@@ -316,14 +316,14 @@ function buildCeiling(z){
 
  if(t==='cove'||t==='gold'){
   addFrame(gMat,bh,bw);
-  const ledCol=t==='gold'?'#ffd166':'#ffdfa8';
-  const lMat=mat(ledCol,{emissive:ledOn?ledCol:'#000000',emissiveIntensity:ledOn?.95:0,metalness:t==='gold'?.7:.1,roughness:.2});
+  const ledCol=t==='gold'?'#ffd166':'#ffe4b5';
+  const lMat=new THREE.MeshBasicMaterial({color:ledOn?ledCol:'#555555'});
   const iw=W-bw*2,id2=D_z-bw*2;
   if(iw>.2&&id2>.2){
-   const sN=new THREE.Mesh(new THREE.BoxGeometry(iw,.025,.03),lMat);sN.position.set(0,-bh+.015,-id2/2);
-   const sS=new THREE.Mesh(new THREE.BoxGeometry(iw,.025,.03),lMat);sS.position.set(0,-bh+.015,id2/2);
-   const sW=new THREE.Mesh(new THREE.BoxGeometry(.03,.025,id2),lMat);sW.position.set(-iw/2,-bh+.015,0);
-   const sE=new THREE.Mesh(new THREE.BoxGeometry(.03,.025,id2),lMat);sE.position.set(iw/2,-bh+.015,0);
+   const sN=new THREE.Mesh(new THREE.BoxGeometry(iw,.025,.035),lMat);sN.position.set(0,-bh+.015,-id2/2);
+   const sS=new THREE.Mesh(new THREE.BoxGeometry(iw,.025,.035),lMat);sS.position.set(0,-bh+.015,id2/2);
+   const sW=new THREE.Mesh(new THREE.BoxGeometry(.035,.025,id2),lMat);sW.position.set(-iw/2,-bh+.015,0);
+   const sE=new THREE.Mesh(new THREE.BoxGeometry(.035,.025,id2),lMat);sE.position.set(iw/2,-bh+.015,0);
    g.add(sN,sS,sW,sE);
   }
   if(t==='gold'){
@@ -332,10 +332,10 @@ function buildCeiling(z){
   }
  }else if(t==='linear'){
   addFrame(gMat,.08,bw*.7);
-  const trkMat=mat('#18181c'),ledMat=mat('#fff7e6',{emissive:ledOn?'#ffebc2':'#000',emissiveIntensity:ledOn?.9:0});
+  const trkMat=mat('#18181c'),ledMat=new THREE.MeshBasicMaterial({color:ledOn?'#fff3d1':'#444444'});
   [-.35,.35].forEach(k=>{
    const tr=new THREE.Mesh(new THREE.BoxGeometry(W*.65,.03,.05),trkMat);tr.position.set(0,-.015,D_z*k*.5);tr.userData.isSlab=1;
-   const ld=new THREE.Mesh(new THREE.BoxGeometry(W*.6,.01,.03),ledMat);ld.position.set(0,-.03,D_z*k*.5);ld.userData.isSlab=1;
+   const ld=new THREE.Mesh(new THREE.BoxGeometry(W*.6,.012,.03),ledMat);ld.position.set(0,-.03,D_z*k*.5);ld.userData.isSlab=1;
    g.add(tr,ld);
   });
  }else if(t==='wood_slats'){
@@ -354,23 +354,16 @@ function buildCeiling(z){
    bx.position.set(W*kx,-.02,D_z*kz);bx.userData.isSlab=1;g.add(bx);
   }));
  }
-
- if(ledOn&&t!=='flat'){
-  const pl=new THREE.PointLight(0xffe4b8,.45,Math.max(W,D_z)*1.5,1.8);
-  pl.position.set(0,-.25,0);pl.userData.coveLt=1;g.add(pl);
- }
  CL[id]=g;CLG.add(g);
 }
 
 function updateCeilingVisibility(){
- // ceilMode: 0=تلقائي (يخفي البلاطة المصمتة من فوق ويظهر الجبس بورد، ويظهر السقف كاملاً عند التجول)، 1=ظاهر بالكامل، 2=مخفي
  if(ceilMode===2){CLG.visible=false;return}
  CLG.visible=true;
  const showFullSlab=(ceilMode===1)||(mode!=='orbit')||(CAM.position.y<2.65);
  for(const id in CL){
   CL[id].traverse(o=>{
    if(o.userData.isSlab)o.visible=showFullSlab;
-   if(o.userData.coveLt)o.intensity=(ambMode>0?.55:.2);
   });
  }
 }
@@ -446,6 +439,7 @@ const CAT=[
 ['swing','مرجيحة بلكونة','dec','#c9ada7','#8b6a4a',()=>{B(1,.06,.5,0,.45,0,1);B(.04,1.9,.04,-.48,.45,0,2);B(.04,1.9,.04,.48,.45,0,2);B(1.1,.04,.1,0,2.35,0,2)}],
 ['frame','برواز صور 60×45','dec','#3b2a20','#fff',fFr2(.6,.45),1.3],['frame2','برواز مربع','dec','#3b2a20','#fff',fFr2(.4,.4),1.3],['frame3','برواز كبير','dec','#3b2a20','#fff',fFr2(.9,.6),1.2]];
 const CATM=Object.fromEntries(CAT.map(c=>[c[0],{n:c[1],t:c[2],c1:c[3],c2:c[4],f:c[5],y:c[6]||0}])),LI=new Set(['chand','chand2','chand_ring','chand_crys','track_lt','sconce','lamp','spot','wish']);
+const CEIL_MOUNT=new Set(['chand','chand2','chand_ring','chand_crys','track_lt','spot']);
 const TABS=[['app','أجهزة'],['kb','مطبخ وحمام'],['liv','صالة'],['bed','نوم'],['dec','ديكور وإضاءة']];
 
 /* ===== بناء/مزامنة ===== */
@@ -455,15 +449,16 @@ function mk(id,it){const c=CATM[it.t];if(!c)return;if(IM[id])root.remove(IM[id])
  if(PH[id])photo(id,PH[id]);if(sel==id)hl();light()}
 
 function light(){
+ if(!S.background)S.background=new THREE.Color(0xd7eaf8);
  if(ambMode===0){
-  S.background.set(0xd7eaf8);hemi.color.set(0xffffff);hemi.groundColor.set(0x998877);hemi.intensity=.75;
+  S.background.set(0xd7eaf8);hemi.color.set(0xffffff);hemi.groundColor.set(0x998877);hemi.intensity=.78;
   sun.color.set(0xfff4e0);sun.intensity=.95;sun.position.set(14,24,10);$('dn').textContent='☀️ نهار';
  }else if(ambMode===1){
-  S.background.set(0x3d1628);hemi.color.set(0xffb899);hemi.groundColor.set(0x59253a);hemi.intensity=.58;
-  sun.color.set(0xff8c66);sun.intensity=.75;sun.position.set(4,9,14);$('dn').textContent='🌅 غروب';
+  S.background.set(0x3d1628);hemi.color.set(0xffb899);hemi.groundColor.set(0x59253a);hemi.intensity=.62;
+  sun.color.set(0xff8c66);sun.intensity=.78;sun.position.set(4,9,14);$('dn').textContent='🌅 غروب';
  }else{
-  S.background.set(0x0b0e1a);hemi.color.set(0xdde0ff);hemi.groundColor.set(0x221a24);hemi.intensity=.2;
-  sun.color.set(0x8899cc);sun.intensity=.06;$('dn').textContent='🌙 ليل';
+  S.background.set(0x0b0e1a);hemi.color.set(0xdde0ff);hemi.groundColor.set(0x221a24);hemi.intensity=.25;
+  sun.color.set(0x8899cc);sun.intensity=.08;$('dn').textContent='🌙 ليل';
  }
  for(const id in IM)IM[id].traverse(o=>{if(o.isPointLight)o.intensity=(ambMode>0)&&(D.items[id]||{}).on!==0?.95*o.userData.k:0});
  updateCeilingVisibility();
@@ -496,10 +491,11 @@ function selItem(id){
  const it=D.items[id];
  if(it&&it.t==='wish'&&it.note)toast(`💌 أمنية ${it.by||'حبنا'}: « ${it.note} »`);
 }
-function showSel(){const p=$('sel');if(!sel||!D.items[sel]){p.style.display='none';return}const it=D.items[sel],c=CATM[it.t];p.style.display='block';
+function showSel(){const p=$('sel');if(!sel||!D.items[sel]){p.style.display='none';return}const it=D.items[sel],c=CATM[it.t],isCeil=CEIL_MOUNT.has(it.t);p.style.display='block';
  const sl=(k,l,a,b,v)=>`<label>${l}<input type="range" data-k="${k}" min="${a}" max="${b}" step=".05" value="${v}"></label>`;
  p.innerHTML=`<b>${c.n}</b> <button data-a="x">✕</button><br><button data-a="rl">⟲</button><button data-a="rr">⟳</button><button data-a="dup">⧉</button><button data-a="del">🗑</button><br><button data-a="n-x">◀</button><button data-a="n+x">▶</button><button data-a="n-z">▲</button><button data-a="n+z">▼</button>`
- +sl('sx','عرض',.4,2.5,it.sx||1)+sl('sy','ارتفاع',.4,2.5,it.sy||1)+sl('sz','عمق',.4,2.5,it.sz||1)+sl('y','الارتفاع عن الأرض',0,2.6,it.y||0)
+ +sl('sx','عرض',.4,2.5,it.sx||1)+sl('sy','ارتفاع',.4,2.5,it.sy||1)+sl('sz','عمق',.4,2.5,it.sz||1)
+ +(isCeil?sl('y','مستوى التدلي من السقف',-.8,.05,it.y||0):sl('y','الارتفاع عن الأرض',0,2.4,it.y||0))
  +`<label>لون 1 <input type="color" data-k="c1" value="${it.c1||c.c1}"> لون 2 <input type="color" data-k="c2" value="${it.c2||c.c2}"></label>`
  +(it.t==='wish'?`<div style="margin:6px 0;padding:6px;background:rgba(255,42,95,.15);border-radius:10px;font-size:12px">${it.note?`💌 « ${esc(it.note)} »`:'اكتب ذكرى أو أمنية لهذا الركن'}<br><button data-a="wish">✍️ كتابة/تعديل الأمنية</button></div>`:'')
  +(it.t.startsWith('frame')?'<button data-a="ph">📸 رفع صورة من جهازي</button>':'')+(LI.has(it.t)?'<button data-a="lt">💡 تشغيل/إطفاء الإضاءة</button>':'')}
