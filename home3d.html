@@ -17,12 +17,13 @@ button.on{background:linear-gradient(135deg,#ff2a5f,#c9184a);border-color:#ffd16
 .bar>*{pointer-events:auto}.hid #tools{display:none}
 #warmBanner{position:fixed;top:calc(52px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:4;background:linear-gradient(90deg,rgba(74,8,35,.85),rgba(130,15,55,.88),rgba(74,8,35,.85));border:1px solid rgba(255,209,102,.55);padding:5px 18px;border-radius:30px;font-family:'Aref Ruqaa',serif;font-size:16px;color:#ffe0e9;box-shadow:0 6px 20px rgba(0,0,0,.4);pointer-events:none;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis;transition:opacity .5s}
 .hid~#warmBanner{top:calc(10px + env(safe-area-inset-top))}
-.pn{position:fixed;z-index:6;background:rgba(34,6,20,.94);backdrop-filter:blur(10px);border:1.5px solid rgba(255,140,165,.5);border-radius:20px;padding:12px;display:none;max-height:48vh;overflow:auto;box-shadow:0 12px 35px rgba(0,0,0,.6)}
+.pn{position:fixed;z-index:6;background:rgba(34,6,20,.95);backdrop-filter:blur(10px);border:1.5px solid rgba(255,140,165,.5);border-radius:20px;padding:12px;display:none;max-height:52vh;overflow:auto;box-shadow:0 12px 35px rgba(0,0,0,.65)}
 #cat{bottom:8px;right:8px;left:8px}#sel{top:96px;right:8px;width:255px}#wm{bottom:8px;right:8px;left:8px;text-align:center}
 #nb{top:65px;right:8px;left:8px;max-height:74vh}#nb td,#nb th{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.1);text-align:right}
 .gr{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}label{display:block;margin:4px 0;font-size:12px}label input[type=range]{width:100%;accent-color:#ff2a5f}
 .code-box{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.45);border:1px solid #ffd166;padding:3px 10px;border-radius:12px;margin:4px 2px;font-size:12px}
 .sw-btn{width:34px;height:28px;border-radius:10px;vertical-align:middle;border:2px solid rgba(255,255,255,.6)}
+.sec-div{margin:8px 0 4px;padding-top:6px;border-top:1px dashed rgba(255,209,102,.35);color:#ffd166;font-size:12.5px}
 #chat{left:8px;bottom:8px;width:min(340px,calc(100% - 16px));height:48vh;flex-direction:column;padding:8px}
 #msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px}
 .m{position:relative;max-width:85%;padding:6px 12px;border-radius:14px;line-height:1.5;word-break:break-word}.m small{display:block;font-size:10px;opacity:.7}
@@ -45,8 +46,9 @@ button.on{background:linear-gradient(135deg,#ff2a5f,#c9184a);border-color:#ffd16
  <button id="fold" title="إخفاء/إظهار الأدوات">☰</button>
  <span id="tools">
   <button data-m="orbit" class="on">🏠 علوي</button><button data-m="walk">🚶 تجول</button><button data-m="gyro">📱 جيرو</button>
-  <button id="fs" title="ملء الشاشة">⛶</button><button id="un" title="تراجع Ctrl+Z">↩️</button><button id="re" title="إعادة Ctrl+Y">↪️</button>
-  <button id="dn" title="تغيير جو الإضاءة">🌅 غروب</button><button id="tp" title="المتر الهندسي">📏</button>
+  <button id="clb" title="إظهار/إخفاء السقف والجبس بورد">🏛️ السقف: تلقائي</button>
+  <button id="dn" title="تغيير جو الإضاءة">🌅 غروب</button>
+  <button id="fs" title="ملء الشاشة">⛶</button><button id="un" title="تراجع Ctrl+Z">↩️</button><button id="re" title="إعادة Ctrl+Y">↪️</button><button id="tp" title="المتر الهندسي">📏</button>
   <select id="sl"><option value="1">تصميم شقتنا 1 ♥️</option><option value="2">فكرة مقترحة 2 ✨</option><option value="3">فكرة مقترحة 3 🌸</option></select>
   <button id="bk">🛋️ كتالوج</button><button id="nbb">📒 الدفتر والألوان</button><button id="cht">💬 شاتنا</button><button id="hm">🏠 للبيت</button>
  </span>
@@ -77,7 +79,7 @@ const ROOT='rooms/house_3d/',Q=new URLSearchParams(location.search),$=i=>documen
 const K=n=>String(n).replace(/[.#$\[\]\/]/g,'_'),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sn=v=>Math.round(v*20)/20,toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3500)};
 window.onerror=m=>{const e=$('err');e.textContent='⚠️ '+m;e.style.display='block'};
-let ME=Q.get('user'),YOU=Q.get('partner'),db=null,ref=null,D={items:{},walls:{},floors:{},palette:[]},slot=1,hist=[],redo=[],sel=null,mode='orbit',ambMode=1,tape=0,tp=[],PH={},IM={},WG={},WJ={},FL={},FJ={},G,bh=null,wsel=null,tab='app';
+let ME=Q.get('user'),YOU=Q.get('partner'),db=null,ref=null,D={items:{},walls:{},floors:{},ceilings:{},palette:[]},slot=1,hist=[],redo=[],sel=null,mode='orbit',ambMode=1,ceilMode=0,tape=0,tp=[],PH={},IM={},WG={},WJ={},FL={},FJ={},CL={},CJ={},G,bh=null,wsel=null,tab='app';
 
 /* ===== عبارات الدفء النفسي ===== */
 const WARM_QUOTES=[
@@ -96,14 +98,14 @@ setInterval(()=>{
 
 /* ===== المشهد والإضاءة الدافئة ===== */
 const RN=new THREE.WebGLRenderer({canvas:$('c'),antialias:true});RN.setPixelRatio(Math.min(devicePixelRatio,2));RN.shadowMap.enabled=true;RN.outputEncoding=THREE.sRGBEncoding;
-const S=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(55,1,.05,300),root=new THREE.Group(),LB=new THREE.Group();S.add(root,LB);
+const S=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(55,1,.05,300),root=new THREE.Group(),CLG=new THREE.Group(),LB=new THREE.Group();S.add(root,CLG,LB);
 const hemi=new THREE.HemisphereLight(0xfff5eb,0x997766,.75),sun=new THREE.DirectionalLight(0xffdfba,.95);
 sun.position.set(14,22,11);sun.target.position.set(7,0,4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-12,right:12,top:12,bottom:-12,far:70});sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.0005;S.add(hemi,sun,sun.target);
 const gnd=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0xd8c6b8,roughness:.9}));gnd.rotation.x=-Math.PI/2;gnd.position.set(7,-.07,4);gnd.receiveShadow=true;S.add(gnd);
 function rs(){RN.setSize(innerWidth,innerHeight,false);CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 const mat=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.65,metalness:0},o));
 
-/* ===== خامات الحوائط والأرضيات المعاصرة (12 نوع أرضيات حديثة) ===== */
+/* ===== خامات الأرضيات (12 نوع) + الأسقف والجبس بورد (6 أنواع) ===== */
 const FLOOR_CATALOG=[
  ['por','بورسلين كلكتا ذهبي ✨'],['por_beige','بورسلين بيج كريمي 🤍'],['por_grey','بورسلين رمادي مودرن 🪨'],
  ['wood','باركيه أرو دافئ 🪵'],['herring','باركيه شيفرون (سبعات) 📐'],['wood_dark','باركيه جوزي غامق 🤎'],
@@ -111,6 +113,16 @@ const FLOOR_CATALOG=[
  ['micro','ميكروسمنت ناعم ☁️'],['tile_hex','سيراميك سداسي مودرن ⬡'],['tile','سيراميك كلاسيك ناعم 💠']
 ];
 const FLOOR_NAMES=Object.fromEntries(FLOOR_CATALOG);
+
+const CEIL_CATALOG=[
+ ['cove','جبس بورد بيت نور دافئ (Warm LED) ✨'],
+ ['linear','جبس بورد شرائح ماجنتيك (Linear LED) ⚡'],
+ ['gold','جبس بورد كلاسيك بإطار ذهبي وصُرّة 👑'],
+ ['wood_slats','سقف شرائح خشب مودرن ودافئ 🪵'],
+ ['neo','سقف نيوكلاسيك بانوهات فخمة 🏛️'],
+ ['flat','سقف فلات سادة ناعم 🤍']
+];
+const CEIL_NAMES=Object.fromEntries(CEIL_CATALOG);
 
 const PAINT_PRESETS=[
  ['#F5EFE6','أوف وايت دافئ (Warm Off-White)'],
@@ -152,7 +164,7 @@ function tex(t){
   g.fillStyle='#efe6d8';g.fillRect(0,0,256,256);
   g.strokeStyle='rgba(255,255,255,.45)';g.lineWidth=3;
   for(let i=0;i<5;i++){g.beginPath();g.moveTo(0,i*55);g.bezierCurveTo(90,i*50+30,170,i*60-20,256,i*55);g.stroke()}
-  g.strokeStyle='#dccmb8';g.lineWidth=2;g.strokeRect(0,0,128,128);g.strokeRect(128,128,128,128);
+  g.strokeStyle='#d5c4b0';g.lineWidth=2;g.strokeRect(0,0,128,128);g.strokeRect(128,128,128,128);
  }else if(t=='por_grey'){
   g.fillStyle='#bfc4c9';g.fillRect(0,0,256,256);
   for(let i=0;i<180;i++){g.fillStyle=i%2?'rgba(255,255,255,.08)':'rgba(0,0,0,.06)';g.fillRect(Math.random()*256,Math.random()*256,18,18)}
@@ -201,6 +213,7 @@ const Z=[
  ['bal','البلكونة',1.5,2.33,4.57,3.45]
 ];
 const DEF={salon:'por',corr:'por',r1:'wood',r2:'wood',r3:'herring',kit:'por_beige',man:'tile',bath:'marble',bal:'terrazzo'};
+const DEF_CEIL={salon:'cove',corr:'linear',r1:'cove',r2:'cove',r3:'gold',kit:'linear',man:'flat',bath:'flat',bal:'wood_slats'};
 
 const WALLS=[
  ['e1',4.47,0,7.35,0,1,0,['w',1.45,1.3],'حائط شباك غرفة 1'],
@@ -252,13 +265,11 @@ function buildWall(w){
  if(o=='w'||o=='g'){const gl=new THREE.Mesh(new THREE.PlaneGeometry(wd,y1-y0),mat('#bfe6ff',{transparent:true,opacity:.3,roughness:.1}));gl.position.set(al-L/2,(y0+y1)/2,0);g.add(gl)}
  if(o=='s'){const m=new THREE.Mesh(new THREE.BoxGeometry(wd+.1,.05,T+.25),mat('#fff',{map:tx('marble',1,1)}));m.position.set(al-L/2,y0,0);m.castShadow=true;m.userData.wid=id;g.add(m)}
  if(o=='d'){
-  // حلق الباب الخشب
   const fMat=mat('#6e4226');
-  const fL=new THREE.Mesh(new THREE.BoxGeometry(.04,2.1,T+.03),fMat);fL.position.set(a-L/2,.0+1.05,0);
-  const fR=new THREE.Mesh(new THREE.BoxGeometry(.04,2.1,T+.03),fMat);fR.position.set(b-L/2,.0+1.05,0);
+  const fL=new THREE.Mesh(new THREE.BoxGeometry(.04,2.1,T+.03),fMat);fL.position.set(a-L/2,1.05,0);
+  const fR=new THREE.Mesh(new THREE.BoxGeometry(.04,2.1,T+.03),fMat);fR.position.set(b-L/2,1.05,0);
   const fT=new THREE.Mesh(new THREE.BoxGeometry(wd+.08,.04,T+.03),fMat);fT.position.set(al-L/2,2.1,0);
   g.add(fL,fR,fT);
-  // ضلفة الباب ومقبض الباب المظبوط
   const defSw=op&&op[3]!==undefined?op[3]:-1,defHg=op&&op[4]!==undefined?op[4]:0;
   const sw=st.sw?defSw*-1:defSw,hg=st.hg!==undefined?(defHg^st.hg):defHg;
   const pv=new THREE.Group();
@@ -266,7 +277,6 @@ function buildWall(w){
   pv.rotation.y=(hg?1:-1)*sw*1.32;
   const l=new THREE.Mesh(new THREE.BoxGeometry(wd,2.05,.04),mat('#8c5832'));
   l.position.set((hg?-1:1)*(wd/2),1.025,0);
-  // المقبض في الإحداثيات المحلية للضلفة (عند الحافة وعلى ارتفاع متر واحد)
   const hnd=new THREE.Mesh(new THREE.BoxGeometry(.09,.03,.11),mat('#ffd166',{metalness:.85,roughness:.2}));
   hnd.position.set((hg?-1:1)*(wd/2-.1),-.04,0);
   l.add(hnd);l.castShadow=true;l.userData.wid=id;pv.add(l);g.add(pv);
@@ -280,11 +290,96 @@ function buildFloor(z){
  m.material=mat('#fff',{map:tx(t,(x2-x1)/1.3,(z2-z1)/1.3),roughness:rough,metalness:rough<.2?.12:.02});
 }
 
+/* ===== بناء الأسقف والجبس بورد وبيت النور لكل غرفة ===== */
+function buildCeiling(z){
+ const [id,nm,x1,z1,x2,z2]=z;
+ if(CL[id]){CLG.remove(CL[id]);CL[id].traverse(m=>m.geometry&&m.geometry.dispose())}
+ const cfg=(D.ceilings&&D.ceilings[id])||{},t=cfg.t||DEF_CEIL[id]||'cove',colHex=cfg.c||'#FAF7F2',ledOn=cfg.led!==0;
+ const W=x2-x1,D_z=z2-z1,cx=(x1+x2)/2,cz=(z1+z2)/2;
+ const g=new THREE.Group();g.position.set(cx,2.7,cz);
+
+ // بلاطة السقف العلوية (تظهر من الأسفل دائماً وفي الوضع الكامل)
+ const slabMat=mat(colHex,{roughness:.85});
+ const slab=new THREE.Mesh(new THREE.BoxGeometry(W-.04,.04,D_z-.04),slabMat);
+ slab.position.y=.02;slab.userData.isSlab=1;g.add(slab);
+
+ // إطار الجبس بورد الساقط داير ما يدور الغرفة
+ const bw=Math.min(.38,Math.min(W,D_z)*.22),bh=.1;
+ const gMat=mat(colHex,{roughness:.7});
+ const addFrame=(mMat,dropH,wB)=>{
+  const fN=new THREE.Mesh(new THREE.BoxGeometry(W,dropH,wB),mMat);fN.position.set(0,-dropH/2,-D_z/2+wB/2);
+  const fS=new THREE.Mesh(new THREE.BoxGeometry(W,dropH,wB),mMat);fS.position.set(0,-dropH/2,D_z/2-wB/2);
+  const fW=new THREE.Mesh(new THREE.BoxGeometry(wB,dropH,D_z-wB*2),mMat);fW.position.set(-W/2+wB/2,-dropH/2,0);
+  const fE=new THREE.Mesh(new THREE.BoxGeometry(wB,dropH,D_z-wB*2),mMat);fE.position.set(W/2-wB/2,-dropH/2,0);
+  g.add(fN,fS,fW,fE);
+ };
+
+ if(t==='cove'||t==='gold'){
+  addFrame(gMat,bh,bw);
+  const ledCol=t==='gold'?'#ffd166':'#ffdfa8';
+  const lMat=mat(ledCol,{emissive:ledOn?ledCol:'#000000',emissiveIntensity:ledOn?.95:0,metalness:t==='gold'?.7:.1,roughness:.2});
+  const iw=W-bw*2,id2=D_z-bw*2;
+  if(iw>.2&&id2>.2){
+   const sN=new THREE.Mesh(new THREE.BoxGeometry(iw,.025,.03),lMat);sN.position.set(0,-bh+.015,-id2/2);
+   const sS=new THREE.Mesh(new THREE.BoxGeometry(iw,.025,.03),lMat);sS.position.set(0,-bh+.015,id2/2);
+   const sW=new THREE.Mesh(new THREE.BoxGeometry(.03,.025,id2),lMat);sW.position.set(-iw/2,-bh+.015,0);
+   const sE=new THREE.Mesh(new THREE.BoxGeometry(.03,.025,id2),lMat);sE.position.set(iw/2,-bh+.015,0);
+   g.add(sN,sS,sW,sE);
+  }
+  if(t==='gold'){
+   const med=new THREE.Mesh(new THREE.CylinderGeometry(.38,.38,.025,24),mat('#d4af37',{metalness:.75,roughness:.25}));
+   med.position.y=-.01;med.userData.isSlab=1;g.add(med);
+  }
+ }else if(t==='linear'){
+  addFrame(gMat,.08,bw*.7);
+  const trkMat=mat('#18181c'),ledMat=mat('#fff7e6',{emissive:ledOn?'#ffebc2':'#000',emissiveIntensity:ledOn?.9:0});
+  [-.35,.35].forEach(k=>{
+   const tr=new THREE.Mesh(new THREE.BoxGeometry(W*.65,.03,.05),trkMat);tr.position.set(0,-.015,D_z*k*.5);tr.userData.isSlab=1;
+   const ld=new THREE.Mesh(new THREE.BoxGeometry(W*.6,.01,.03),ledMat);ld.position.set(0,-.03,D_z*k*.5);ld.userData.isSlab=1;
+   g.add(tr,ld);
+  });
+ }else if(t==='wood_slats'){
+  const wMat=mat('#9c6b43',{roughness:.55});
+  const count=Math.max(4,Math.floor(W/.28));
+  for(let i=0;i<count;i++){
+   const sx=-W/2+.18+i*((W-.36)/Math.max(1,count-1));
+   const sl=new THREE.Mesh(new THREE.BoxGeometry(.07,.06,D_z-.12),wMat);
+   sl.position.set(sx,-.03,0);sl.userData.isSlab=1;g.add(sl);
+  }
+ }else if(t==='neo'){
+  addFrame(gMat,.09,bw*.8);
+  const pMat=mat(colHex,{roughness:.6});
+  [-.22,.22].forEach(kx=>[-.22,.22].forEach(kz=>{
+   const bx=new THREE.Mesh(new THREE.BoxGeometry(W*.34,.04,D_z*.34),pMat);
+   bx.position.set(W*kx,-.02,D_z*kz);bx.userData.isSlab=1;g.add(bx);
+  }));
+ }
+
+ if(ledOn&&t!=='flat'){
+  const pl=new THREE.PointLight(0xffe4b8,.45,Math.max(W,D_z)*1.5,1.8);
+  pl.position.set(0,-.25,0);pl.userData.coveLt=1;g.add(pl);
+ }
+ CL[id]=g;CLG.add(g);
+}
+
+function updateCeilingVisibility(){
+ // ceilMode: 0=تلقائي (يخفي البلاطة المصمتة من فوق ويظهر الجبس بورد، ويظهر السقف كاملاً عند التجول)، 1=ظاهر بالكامل، 2=مخفي
+ if(ceilMode===2){CLG.visible=false;return}
+ CLG.visible=true;
+ const showFullSlab=(ceilMode===1)||(mode!=='orbit')||(CAM.position.y<2.65);
+ for(const id in CL){
+  CL[id].traverse(o=>{
+   if(o.userData.isSlab)o.visible=showFullSlab;
+   if(o.userData.coveLt)o.intensity=(ambMode>0?.55:.2);
+  });
+ }
+}
+
 function label(t,x,zz){const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');g.fillStyle='rgba(74,8,35,.85)';g.fillRect(0,0,256,64);g.strokeStyle='#ffd166';g.lineWidth=3;g.strokeRect(2,2,252,60);g.fillStyle='#ffe0e9';g.font='bold 26px Cairo,Tahoma';g.textAlign='center';g.fillText(t,128,42);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));s.scale.set(1.9,.48,1);s.position.set(x,3.3,zz);return s}
 Z.forEach(z=>LB.add(label(z[1],(z[2]+z[4])/2,(z[3]+z[5])/2)));
 {const sh=new THREE.Mesh(new THREE.BoxGeometry(.5,2.7,1.27),mat('#555'));sh.position.set(9.32,1.35,5.215);sh.castShadow=true;root.add(sh);LB.add(label('مسقط تهوية',9.32,5.215))}
 
-/* ===== كتالوج الأثاث + كبسولة الأمنيات الرومانسية ===== */
+/* ===== كتالوج الأثاث + النجف والإضاءات الحديثة ===== */
 const col=c=>c==='glass'?mat('#bfe6ff',{transparent:true,opacity:.28,roughness:.1}):mat(typeof c=='number'?'#fff':c);
 function B(w,h,d,x,y,z,c,e){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),col(c));m.position.set(x,y+h/2,z);m.castShadow=m.receiveShadow=true;if(typeof c=='number')m.userData.s=c;if(e){m.material.emissive.set(e)}G.add(m)}
 function C(r,h,x,y,z,c,rx){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,20),col(c));m.position.set(x,y+h/2,z);if(rx)m.rotation.x=Math.PI/2;m.castShadow=true;if(typeof c=='number')m.userData.s=c;G.add(m)}
@@ -296,7 +391,11 @@ const fWm=()=>{B(.6,.85,.6,0,0,0,1);C(.2,.02,0,.42,.31,'#223',1);B(.5,.05,.01,0,
 const fCab=()=>{B(.6,.82,.6,0,0,0,1);B(.62,.04,.62,0,.82,0,'#f2f2f2');B(.25,.02,.02,0,.62,.31,2)};
 const fCh=()=>{B(.5,.05,.5,0,.45,0,1);B(.5,.5,.05,0,.5,-.23,1);C(.03,.45,0,0,0,'#333');C(.25,.03,0,0,0,'#333')};
 const fCu=()=>{B(1.6,2.4,.06,0,0,0,1);B(.04,2.4,.1,-.5,0,0,2);B(.04,2.4,.1,.5,0,0,2)};
-const fCd=()=>{C(.015,.5,0,2.2,0,'#999');C(.3,.04,0,2.15,0,1);for(let i=0;i<6;i++){const a=i*1.047;Sp(.06,Math.cos(a)*.28,2.12,Math.sin(a)*.28,'#fff3d6','#ffe2b0')}LT(2)};
+const fCd=()=>{C(.12,.04,0,2.66,0,2);C(.015,.55,0,2.15,0,'#999');C(.32,.04,0,2.15,0,1);for(let i=0;i<6;i++){const a=i*1.047;Sp(.065,Math.cos(a)*.28,2.12,Math.sin(a)*.28,'#fff3d6','#ffe2b0')}LT(2,1.2)};
+const fRings=()=>{C(.14,.04,0,2.66,0,1);[-.15,0,.15].forEach(x=>B(.01,.55,.01,x,2.12,0,'#aaa'));C(.42,.03,0,2.22,0,1);C(.38,.035,0,2.218,0,'#fff8e7');C(.26,.03,0,2.08,0,2);Sp(.12,0,2.08,0,'#fff8e7','#ffe4b5');LT(2.05,1.35)};
+const fCrys=()=>{C(.15,.04,0,2.66,0,1);C(.02,.35,0,2.32,0,1);C(.36,.05,0,2.3,0,1);for(let r=0;r<2;r++){const rad=r?.22:.33,y=r?2.12:2.22,cnt=r?8:12;for(let i=0;i<cnt;i++){const a=i*(Math.PI*2/cnt);Sp(.045,Math.cos(a)*rad,y,Math.sin(a)*rad,'#ffffff','#ffefc2')}}Sp(.08,0,2.02,0,'#fff','#ffe2a8');LT(2.0,1.4)};
+const fTrack=()=>{B(1.3,.04,.06,0,2.66,0,1);[-.45,0,.45].forEach(x=>{C(.04,.08,x,2.58,0,1);Sp(.038,x,2.57,0,'#fff','#ffe6b0')});LT(2.5,1.1)};
+const fSconce=()=>{B(.08,.26,.04,0,0,0,1);C(.06,.22,0,.02,.05,2);Sp(.055,0,.13,.06,'#fff8e0','#ffdca8');LT(.15,.75)};
 const fFr2=(w,h)=>()=>{B(w+.06,h+.06,.03,0,0,0,'#3b2a20');const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({color:'#e8e2da'}));p.position.set(0,(h+.06)/2,.02);p.userData.img=1;G.add(p)};
 const fWish=()=>{C(.16,.04,0,0,0,'#ffd166');Sp(.16,0,.22,0,'#ff2a5f','#ff2a5f');LT(.3,.5)};
 const CAT=[
@@ -333,16 +432,21 @@ const CAT=[
 ['desk','مكتب','bed','#d9c3a5','#8b6a4a',()=>{B(1.2,.04,.6,0,.72,0,1);P4(.55,.25,(x,z)=>C(.025,.72,x,0,z,'#333'));B(.4,.3,.5,.35,.42,0,2)}],
 ['chair','كرسي مكتب','bed','#333','#555',fCh],
 ['wish','💌 كبسولة أمنية/ذكرى','dec','#ff2a5f','#ffd166',fWish,.9],
+['chand_ring','نجفة حلقات ليد Rings','dec','#d4af37','#222222',fRings],
+['chand_crys','نجفة كريستال فخمة','dec','#d4af37','#ffffff',fCrys],
+['chand','نجفة مودرن','dec','#ffffff','#d4af37',fCd],
+['chand2','نجفة كلاسيك','dec','#d4af37','#fff3d6',()=>{fCd();C(.2,.03,0,2.35,0,2)}],
+['track_lt','تراك لايت ماجنتيك','dec','#1a1a1f','#ffd166',fTrack],
+['sconce','أبليك حائط مضيء','dec','#d4af37','#fff5d6',fSconce,1.65],
+['spot','سبوت سقف','dec','#ddd','#fff',()=>{C(.07,.06,0,2.63,0,1);Sp(.045,0,2.6,0,'#fff','#ffe4b5');LT(2.55,.7)}],
+['lamp','أباجورة أرضية','dec','#222','#ffe2b0',()=>{C(.15,.03,0,0,0,1);C(.015,1.45,0,.03,0,1);C(.2,.3,0,1.4,0,2);LT(1.5,.7)}],
 ['rug','سجادة مستطيلة','dec','#c9ada7','#fff',()=>B(2,.02,1.4,0,0,0,1)],['rugr','سجادة دائرية','dec','#9fb3c8','#fff',()=>C(.9,.02,0,0,0,1)],['runner','ممشى','dec','#8d99ae','#fff',()=>B(.7,.02,2.2,0,0,0,1)],
 ['curt','ستارة شيفون','dec','#f5efe6','#d9c3a5',fCu],['curt2','ستارة بلاك أوت','dec','#4a4e69','#222',fCu],
-['chand','نجف مودرن','dec','#ffffff','#d4af37',fCd],['chand2','نجف كلاسيك','dec','#d4af37','#fff3d6',()=>{fCd();C(.2,.03,0,2.35,0,2)}],
-['lamp','أباجورة أرضية','dec','#222','#ffe2b0',()=>{C(.15,.03,0,0,0,1);C(.015,1.45,0,.03,0,1);C(.2,.3,0,1.4,0,2);LT(1.5,.7)}],
-['spot','سبوت','dec','#ddd','#fff',()=>{C(.06,.06,0,2.62,0,1);Sp(.04,0,2.6,0,'#fff','#fff');LT(2.55,.6)}],
 ['plant','زرع أخضر','dec','#8b5a3c','#3c8c4a',()=>{C(.18,.3,0,0,0,1);Sp(.25,0,.55,0,2);Sp(.18,.1,.8,.05,'#4aa35a');Sp(.15,-.1,.9,-.05,'#2f7a3d')}],
 ['swing','مرجيحة بلكونة','dec','#c9ada7','#8b6a4a',()=>{B(1,.06,.5,0,.45,0,1);B(.04,1.9,.04,-.48,.45,0,2);B(.04,1.9,.04,.48,.45,0,2);B(1.1,.04,.1,0,2.35,0,2)}],
 ['frame','برواز صور 60×45','dec','#3b2a20','#fff',fFr2(.6,.45),1.3],['frame2','برواز مربع','dec','#3b2a20','#fff',fFr2(.4,.4),1.3],['frame3','برواز كبير','dec','#3b2a20','#fff',fFr2(.9,.6),1.2]];
-const CATM=Object.fromEntries(CAT.map(c=>[c[0],{n:c[1],t:c[2],c1:c[3],c2:c[4],f:c[5],y:c[6]||0}])),LI=new Set(['chand','chand2','lamp','spot','wish']);
-const TABS=[['app','أجهزة'],['kb','مطبخ وحمام'],['liv','صالة'],['bed','نوم'],['dec','ديكور وأمنيات']];
+const CATM=Object.fromEntries(CAT.map(c=>[c[0],{n:c[1],t:c[2],c1:c[3],c2:c[4],f:c[5],y:c[6]||0}])),LI=new Set(['chand','chand2','chand_ring','chand_crys','track_lt','sconce','lamp','spot','wish']);
+const TABS=[['app','أجهزة'],['kb','مطبخ وحمام'],['liv','صالة'],['bed','نوم'],['dec','ديكور وإضاءة']];
 
 /* ===== بناء/مزامنة ===== */
 function mk(id,it){const c=CATM[it.t];if(!c)return;if(IM[id])root.remove(IM[id]);G=new THREE.Group();c.f();
@@ -351,7 +455,6 @@ function mk(id,it){const c=CATM[it.t];if(!c)return;if(IM[id])root.remove(IM[id])
  if(PH[id])photo(id,PH[id]);if(sel==id)hl();light()}
 
 function light(){
- // 0: نهار مشرق | 1: غروب رومانسي دافئ | 2: سهرة ليلية
  if(ambMode===0){
   S.background.set(0xd7eaf8);hemi.color.set(0xffffff);hemi.groundColor.set(0x998877);hemi.intensity=.75;
   sun.color.set(0xfff4e0);sun.intensity=.95;sun.position.set(14,24,10);$('dn').textContent='☀️ نهار';
@@ -363,21 +466,25 @@ function light(){
   sun.color.set(0x8899cc);sun.intensity=.06;$('dn').textContent='🌙 ليل';
  }
  for(const id in IM)IM[id].traverse(o=>{if(o.isPointLight)o.intensity=(ambMode>0)&&(D.items[id]||{}).on!==0?.95*o.userData.k:0});
+ updateCeilingVisibility();
 }
 
 function apply(){
  for(const id in IM)if(!D.items[id]){root.remove(IM[id]);delete IM[id];if(sel==id){sel=null;hl();showSel()}}
  for(const id in D.items){const j=JSON.stringify(D.items[id]);if(!IM[id]||IM[id].userData.j!==j)mk(id,D.items[id])}
  WALLS.forEach(w=>{const j=JSON.stringify(D.walls[w[0]]||0);if(WJ[w[0]]!==j){WJ[w[0]]=j;buildWall(w)}});
- Z.forEach(z=>{const j=D.floors[z[0]]||'';if(FJ[z[0]]!==j||!FL[z[0]]){FJ[z[0]]=j;buildFloor(z)}});
+ Z.forEach(z=>{
+  const j=D.floors[z[0]]||'';if(FJ[z[0]]!==j||!FL[z[0]]){FJ[z[0]]=j;buildFloor(z)}
+  const cj=JSON.stringify((D.ceilings&&D.ceilings[z[0]])||{});if(CJ[z[0]]!==cj||!CL[z[0]]){CJ[z[0]]=cj;buildCeiling(z)}
+ });
  light();if($('nb').style.display=='block')nb()}
 function saveLocal(){try{localStorage.setItem('house3d_slot_'+slot,JSON.stringify(D))}catch(e){}}
-function loadLocal(){try{const s=localStorage.getItem('house3d_slot_'+slot);if(s){const v=JSON.parse(s);D={items:v.items||{},walls:v.walls||{},floors:v.floors||{},palette:v.palette||[]}}}catch(e){}}
+function loadLocal(){try{const s=localStorage.getItem('house3d_slot_'+slot);if(s){const v=JSON.parse(s);D={items:v.items||{},walls:v.walls||{},floors:v.floors||{},ceilings:v.ceilings||{},palette:v.palette||[]}}}catch(e){}}
 function put(path,val){const p=path.split('/');let o=D;for(let i=0;i<p.length-1;i++)o=o[p[i]]=o[p[i]]||{};if(val===null)delete o[p[p.length-1]];else o[p[p.length-1]]=val;
  saveLocal();if(ref)ref.child(path).set(val);hist.push(JSON.stringify(D));if(hist.length>31)hist.shift();redo=[];apply()}
 function listen(){if(ref)ref.off();hist=[];redo=[];loadLocal();if(!hist.length)hist.push(JSON.stringify(D));apply();
  if(!db)return;ref=db.ref(ROOT+'designs/'+slot);
- ref.on('value',s=>{const v=s.val();if(v){D={items:v.items||{},walls:v.walls||{},floors:v.floors||{},palette:v.palette||[]};saveLocal()}if(!hist.length)hist.push(JSON.stringify(D));apply()})}
+ ref.on('value',s=>{const v=s.val();if(v){D={items:v.items||{},walls:v.walls||{},floors:v.floors||{},ceilings:v.ceilings||{},palette:v.palette||[]};saveLocal()}if(!hist.length)hist.push(JSON.stringify(D));apply()})}
 function undo(){if(hist.length<2)return;redo.push(hist.pop());D=JSON.parse(hist[hist.length-1]);saveLocal();if(ref)ref.set(D);apply()}
 function redoF(){if(!redo.length)return;const s=redo.pop();hist.push(s);D=JSON.parse(s);saveLocal();if(ref)ref.set(D);apply()}
 function hl(){if(bh){S.remove(bh);bh=null}if(sel&&IM[sel]){bh=new THREE.BoxHelper(IM[sel],0xffd166);S.add(bh)}}
@@ -392,7 +499,7 @@ function selItem(id){
 function showSel(){const p=$('sel');if(!sel||!D.items[sel]){p.style.display='none';return}const it=D.items[sel],c=CATM[it.t];p.style.display='block';
  const sl=(k,l,a,b,v)=>`<label>${l}<input type="range" data-k="${k}" min="${a}" max="${b}" step=".05" value="${v}"></label>`;
  p.innerHTML=`<b>${c.n}</b> <button data-a="x">✕</button><br><button data-a="rl">⟲</button><button data-a="rr">⟳</button><button data-a="dup">⧉</button><button data-a="del">🗑</button><br><button data-a="n-x">◀</button><button data-a="n+x">▶</button><button data-a="n-z">▲</button><button data-a="n+z">▼</button>`
- +sl('sx','عرض',.4,2.5,it.sx||1)+sl('sy','ارتفاع',.4,2.5,it.sy||1)+sl('sz','عمق',.4,2.5,it.sz||1)+sl('y','عن الأرض',0,2.6,it.y||0)
+ +sl('sx','عرض',.4,2.5,it.sx||1)+sl('sy','ارتفاع',.4,2.5,it.sy||1)+sl('sz','عمق',.4,2.5,it.sz||1)+sl('y','الارتفاع عن الأرض',0,2.6,it.y||0)
  +`<label>لون 1 <input type="color" data-k="c1" value="${it.c1||c.c1}"> لون 2 <input type="color" data-k="c2" value="${it.c2||c.c2}"></label>`
  +(it.t==='wish'?`<div style="margin:6px 0;padding:6px;background:rgba(255,42,95,.15);border-radius:10px;font-size:12px">${it.note?`💌 « ${esc(it.note)} »`:'اكتب ذكرى أو أمنية لهذا الركن'}<br><button data-a="wish">✍️ كتابة/تعديل الأمنية</button></div>`:'')
  +(it.t.startsWith('frame')?'<button data-a="ph">📸 رفع صورة من جهازي</button>':'')+(LI.has(it.t)?'<button data-a="lt">💡 تشغيل/إطفاء الإضاءة</button>':'')}
@@ -410,7 +517,7 @@ $('pf').onchange=e=>{const f=e.target.files[0];if(!f||!sel)return;const id=sel,i
 function cat(){$('cat').innerHTML=TABS.map(t=>`<button data-t="${t[0]}" class="${t[0]==tab?'on':''}">${t[1]}</button>`).join('')+'<div class="gr">'+CAT.filter(c=>c[2]==tab).map(c=>`<button data-k="${c[0]}">${c[1]}</button>`).join('')+'</div>'}
 $('cat').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.t){tab=b.dataset.t;cat()}else if(b.dataset.k){const c=CATM[b.dataset.k];let x=cam.tx,z=cam.tz;if(mode!='orbit'){const f=fwd();x=wx+f.x*2;z=wz+f.z*2}const id='i'+Date.now().toString(36);const obj={t:b.dataset.k,x:sn(x),z:sn(z),y:c.y,r:0};if(b.dataset.k==='wish'){const txt=prompt('اكتب أمنيتك أو رسالتك في هذا الركن من الشقة ♥️:','هنا هنقضي أحلى أوقات عمرنا سوا ♥️');obj.note=txt||'أحبك في كل ركن هنا ♥️';obj.by=ME||'حبيبك'}put('items/'+id,obj);selItem(id)}};
 
-/* ===== قائمة الحوائط وحفظ كود اللون + الأرضيات المعاصرة ===== */
+/* ===== قائمة الحوائط + قائمة تشطيب الغرفة (الأرضية + السقف والجبس بورد + تعليق النجف) ===== */
 function wmenu(id,f){
  wsel={id,f};const w=WALLS.find(x=>x[0]==id),st=D.walls[id]||{},curCol=(st[f]||'#F5EFE6').toUpperCase(),p=$('wm');
  p.style.display='block';$('sel').style.display='none';sel=null;hl();
@@ -427,9 +534,19 @@ function wmenu(id,f){
 
 function fmenu(z){
  wsel=null;$('sel').style.display='none';sel=null;hl();
- const cur=D.floors[z]||DEF[z],p=$('wm');p.style.display='block';
- p.innerHTML=`<b>✨ اختار أرضية ${Z.find(x=>x[0]==z)[1]}</b> (الحالية: <span style="color:#ffd166">${FLOOR_NAMES[cur]||cur}</span>) <button data-a="x">✕</button><div class="gr" style="justify-content:center;margin-top:8px">`
- +FLOOR_CATALOG.map(t=>`<button data-fz="${z}" data-ft="${t[0]}" class="${cur===t[0]?'on':''}">${t[1]}</button>`).join('')+'</div>';
+ const zObj=Z.find(x=>x[0]==z),curF=D.floors[z]||DEF[z],cCfg=(D.ceilings&&D.ceilings[z])||{},curC=cCfg.t||DEF_CEIL[z]||'cove',cCol=(cCfg.c||'#FAF7F2').toUpperCase(),ledOn=cCfg.led!==0;
+ const p=$('wm');p.style.display='block';
+ p.innerHTML=`<b>🏠 تشطيب وإضاءة ${zObj[1]}</b> <button data-a="x">✕</button>`
+ +`<div class="sec-div">1️⃣ اختار شكل الأرضية (الحالية: ${FLOOR_NAMES[curF]||curF}):</div>`
+ +`<div class="gr" style="justify-content:center">`+FLOOR_CATALOG.map(t=>`<button data-fz="${z}" data-ft="${t[0]}" class="${curF===t[0]?'on':''}">${t[1]}</button>`).join('')+`</div>`
+ +`<div class="sec-div">2️⃣ اختار نوع السقف والجبس بورد (الحالي: ${CEIL_NAMES[curC]||curC}):</div>`
+ +`<div class="gr" style="justify-content:center">`+CEIL_CATALOG.map(t=>`<button data-cz="${z}" data-ct="${t[0]}" class="${curC===t[0]?'on':''}">${t[1]}</button>`).join('')
+ +` <button data-cled="${z}" class="${ledOn?'on':''}">💡 بيت النور: ${ledOn?'شغال':'مطفأ'}</button>`
+ +` <label style="display:inline-flex;align-items:center;gap:4px;margin:2px 6px">لون السقف <input type="color" data-ccol="${z}" value="${cCol}"></label></div>`
+ +`<div class="sec-div">3️⃣ علّق نجفة أو إضاءة في سنتر سقف ${zObj[1]} بضغطة واحدة:</div>`
+ +`<div class="gr" style="justify-content:center">`
+ +[['chand_ring','✨ نجفة حلقات Rings'],['chand_crys','💎 نجفة كريستال'],['chand','💡 نجفة مودرن'],['chand2','👑 نجفة كلاسيك'],['track_lt','⚡ تراك لايت ماجنتيك'],['spot','🔆 سبوت سقف']].map(ch=>`<button data-hang="${ch[0]}" data-hz="${z}">${ch[1]}</button>`).join('')
+ +`</div>`;
 }
 
 $('wm').addEventListener('click',e=>{
@@ -438,6 +555,14 @@ $('wm').addEventListener('click',e=>{
  if(d.copy){navigator.clipboard&&navigator.clipboard.writeText(d.copy);toast(`تم نسخ كود اللون ${d.copy} 📋`);return}
  if(d.savec){const pal=Array.isArray(D.palette)?D.palette.slice():[];if(!pal.includes(d.savec)){pal.push(d.savec);put('palette',pal);wmenu(wsel.id,wsel.f);toast(`اتحفظ اللون ${d.savec} في باليتة شقتنا ⭐`)}return}
  if(d.fz){put('floors/'+d.fz,d.ft);fmenu(d.fz);toast(`تم تغيير الأرضية إلى ${FLOOR_NAMES[d.ft]} ✨`);return}
+ if(d.cz){const prev=(D.ceilings&&D.ceilings[d.cz])||{};put('ceilings/'+d.cz,Object.assign({},prev,{t:d.ct}));fmenu(d.cz);toast(`تم تغيير السقف إلى ${CEIL_NAMES[d.ct]} 🏛️`);return}
+ if(d.cled){const prev=(D.ceilings&&D.ceilings[d.cled])||{};put('ceilings/'+d.cled,Object.assign({},prev,{led:prev.led===0?1:0}));fmenu(d.cled);return}
+ if(d.hang){
+  const zObj=Z.find(x=>x[0]==d.hz);if(!zObj)return;
+  const cx=sn((zObj[2]+zObj[4])/2),cz=sn((zObj[3]+zObj[5])/2),id='i'+Date.now().toString(36);
+  put('items/'+id,{t:d.hang,x:cx,z:cz,y:0,r:0});selItem(id);
+  toast(`اتعلقت ${CATM[d.hang].n} في سنتر سقف ${zObj[1]} ✨`);return;
+ }
  if(!wsel)return;const id=wsel.id,s=Object.assign({},D.walls[id]);
  if(d.f)wmenu(id,d.f);else if(d.o){if(d.o=='r'){delete s.o;delete s.sw;delete s.hg}else s.o=d.o;put('walls/'+id,s)}
  else if(d.sw){s.sw=s.sw?0:1;put('walls/'+id,s)}else if(d.hg){s.hg=s.hg?0:1;put('walls/'+id,s)}
@@ -445,16 +570,21 @@ $('wm').addEventListener('click',e=>{
  else if(d.t){s[wsel.f+'m']=d.t;put('walls/'+id,s)}
 });
 $('wm').addEventListener('input',e=>{
- if(e.target.dataset.cc===undefined||!wsel)return;
- const hex=e.target.value.toUpperCase(),lbl=$('hexLbl');if(lbl)lbl.textContent=hex;
- const s=Object.assign({},D.walls[wsel.id]);s[wsel.f]=hex;s[wsel.f+'m']='';D.walls[wsel.id]=s;buildWall(WALLS.find(x=>x[0]==wsel.id));
+ if(e.target.dataset.cc!==undefined&&wsel){
+  const hex=e.target.value.toUpperCase(),lbl=$('hexLbl');if(lbl)lbl.textContent=hex;
+  const s=Object.assign({},D.walls[wsel.id]);s[wsel.f]=hex;s[wsel.f+'m']='';D.walls[wsel.id]=s;buildWall(WALLS.find(x=>x[0]==wsel.id));
+ }
 });
 $('wm').addEventListener('change',e=>{
+ if(e.target.dataset.ccol){
+  const z=e.target.dataset.ccol,prev=(D.ceilings&&D.ceilings[z])||{};
+  put('ceilings/'+z,Object.assign({},prev,{c:e.target.value.toUpperCase()}));fmenu(z);return;
+ }
  if(e.target.dataset.cc===undefined||!wsel)return;
  const hex=e.target.value.toUpperCase(),s=Object.assign({},D.walls[wsel.id]);s[wsel.f]=hex;s[wsel.f+'m']='';put('walls/'+wsel.id,s);wmenu(wsel.id,wsel.f);
 });
 
-/* ===== دفتر شقتنا (التكلفة + أكواد الدهانات والأرضيات) ===== */
+/* ===== دفتر شقتنا (التكلفة + أكواد الدهانات والأرضيات والأسقف) ===== */
 function nb(){
  let tot=0,bo=0;
  const rows=Object.entries(D.items).map(([id,it])=>{tot+=+it.p||0;if(it.ok)bo+=+it.p||0;return`<tr><td>${CATM[it.t].n}${it.note?` <small style="color:#ffd166">(${esc(it.note)})</small>`:''}</td><td><input type="number" min="0" data-id="${id}" data-k="p" value="${it.p||0}" style="width:90px;color:#000;border-radius:8px;padding:2px 6px"> ج</td><td><input type="checkbox" data-id="${id}" data-k="ok" ${it.ok?'checked':''}> ✅</td></tr>`}).join('');
@@ -463,12 +593,15 @@ function nb(){
   const st=D.walls[w[0]];if(!st)return;
   ['a','b'].forEach(f=>{if(st[f])wallColors.push(`<tr><td>${w[8]||w[0]} (وجه ${f==='a'?'أ':'ب'})</td><td><span style="display:inline-block;width:18px;height:18px;background:${st[f]};border-radius:4px;vertical-align:middle;border:1px solid #fff"></span> <b>${st[f]}</b></td></tr>`)});
  });
- const floorRows=Z.map(z=>{const f=D.floors[z[0]]||DEF[z[0]];return`<tr><td>${z[1]}</td><td style="color:#ffd166">${FLOOR_NAMES[f]||f}</td></tr>`}).join('');
- $('nb').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><b>📒 دفتر تأسيس شقتنا وأكواد الألوان</b> <button data-x>✕</button></div>`
+ const finishRows=Z.map(z=>{
+  const f=D.floors[z[0]]||DEF[z[0]],c=(D.ceilings&&D.ceilings[z[0]]&&D.ceilings[z[0]].t)||DEF_CEIL[z[0]];
+  return`<tr><td><b>${z[1]}</b></td><td style="color:#ffd166">${FLOOR_NAMES[f]||f}</td><td style="color:#ffe0e9">${CEIL_NAMES[c]||c}</td></tr>`;
+ }).join('');
+ $('nb').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><b>📒 دفتر تأسيس شقتنا وأكواد الألوان والتشطيبات</b> <button data-x>✕</button></div>`
  +`<div style="margin:8px 0;padding:8px;background:rgba(255,42,95,.18);border-radius:12px">💰 إجمالي الميزانية: <b>${tot} ج</b> | تم شراؤه: <b>${bo} ج</b> | المتبقي: <b>${tot-bo} ج</b></div>`
- +`<b>🛋️ قائمة الأثاث والأجهزة:</b><table style="width:100%;margin-bottom:12px">${rows||'<tr><td>مفيش قطع مضافة لسه</td></tr>'}</table>`
+ +`<b>🛋️ قائمة الأثاث والأجهزة والنجف:</b><table style="width:100%;margin-bottom:12px">${rows||'<tr><td>مفيش قطع مضافة لسه</td></tr>'}</table>`
  +`<b>🎨 أكواد دهانات الحوائط المختارة (للشراء من يوتن/GLC):</b><table style="width:100%;margin-bottom:12px">${wallColors.join('')||'<tr><td>كل الحوائط باللون الأساسي (#F5EFE6)</td></tr>'}</table>`
- +`<b>✨ تشطيب أرضيات الغرف:</b><table style="width:100%">${floorRows}</table>`;
+ +`<b>✨ جدول تشطيب الأرضيات والأسقف لكل غرفة:</b><table style="width:100%"><tr><th>الغرفة</th><th>الأرضية</th><th>السقف والجبس بورد</th></tr>${finishRows}</table>`;
 }
 $('nb').addEventListener('change',e=>{const d=e.target.dataset;if(d.id){put('items/'+d.id+'/'+d.k,d.k=='ok'?e.target.checked:(+e.target.value||0))}});
 $('nb').addEventListener('click',e=>{if(e.target.dataset.x!==undefined)$('nb').style.display='none'});
@@ -476,6 +609,11 @@ const show=id=>{['cat','nb','chat'].forEach(k=>{if(k!=id)$(k).style.display='non
 $('bk').onclick=()=>show('cat');$('nbb').onclick=()=>show('nb');$('cht').onclick=()=>show('chat');$('fold').onclick=()=>$('top').classList.toggle('hid');
 $('hm').onclick=()=>{const h=Q.get('home');h?location.href=h:window.close()};
 $('un').onclick=undo;$('re').onclick=redoF;$('dn').onclick=()=>{ambMode=(ambMode+1)%3;light()};
+$('clb').onclick=()=>{
+ ceilMode=(ceilMode+1)%3;
+ $('clb').textContent='🏛️ السقف: '+['تلقائي','ظاهر','مخفي'][ceilMode];
+ updateCeilingVisibility();
+};
 $('tp').onclick=()=>{tape=tape?0:1;tp=[];tl.visible=false;$('tp').classList.toggle('on',!!tape);toast(tape?'اضغط على نقطتين لقياس المسافة بالمتر والسنتيمتر':'اتقفلت أداة القياس')};
 $('sl').onchange=e=>{slot=+e.target.value;sel=null;hl();showSel();for(const id in IM){root.remove(IM[id]);delete IM[id]}listen()};
 $('fs').onclick=()=>{const d=document,e=d.documentElement;if(!d.fullscreenElement&&!d.webkitFullscreenElement)(e.requestFullscreen||e.webkitRequestFullscreen).call(e);else(d.exitFullscreen||d.webkitExitFullscreen).call(d)};
@@ -488,7 +626,7 @@ function fwd(){if(mode=='gyro'){const v=new V3(0,0,-1).applyQuaternion(CAM.quate
 function walkStep(dt){const f=(keys.w||keys.ArrowUp?1:0)-(keys.s||keys.ArrowDown?1:0)-jv.y+mvb.f,s=(keys.d||keys.ArrowRight?1:0)-(keys.a||keys.ArrowLeft?1:0)+jv.x,v=fwd(),sp=2.2*dt;
  wx+=(v.x*f-v.z*s)*sp;wz+=(v.z*f+v.x*s)*sp;CAM.position.set(wx,1.6,wz);if(mode=='walk')CAM.rotation.set(pit,yaw,0,'YXZ')}
 function setMode(m){if(m!='orbit'&&mode=='orbit'){wx=cam.tx;wz=cam.tz}mode=m;LB.visible=m=='orbit';$('joy').style.display=m=='walk'?'block':'none';$('mv').style.display=m=='gyro'?'flex':'none';
- document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m==m));if(m=='gyro')gyroOn()}
+ document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m==m));updateCeilingVisibility();if(m=='gyro')gyroOn()}
 const q1=new THREE.Quaternion(-Math.SQRT1_2,0,0,Math.SQRT1_2),q0=new THREE.Quaternion(),eu=new THREE.Euler(),zee=new V3(0,0,1);
 function gyroOn(){if(gyroOn.d)return;const go=()=>{gyroOn.d=1;addEventListener('deviceorientation',gy)},O=window.DeviceOrientationEvent;
  if(O&&O.requestPermission)O.requestPermission().then(r=>r=='granted'?go():toast('لازم تسمح بحساس الحركة')).catch(()=>toast('الحساس مش متاح'));else go()}
@@ -556,7 +694,7 @@ function start(){
 }
 function boot(){if(!ME){$('who').style.display='flex';$('who').onclick=e=>{const w=e.target.dataset.w;if(!w)return;ME=w;YOU=w=='مصطفى'?'فريال':'مصطفى';$('who').style.display='none';start()}}else{YOU=YOU||(ME=='مصطفى'?'فريال':'مصطفى');start()}}
 loadLocal();apply();let last=performance.now();
-(function loop(t){requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;if(mode=='orbit')oc();else walkStep(dt);
+(function loop(t){requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;if(mode=='orbit'){oc();if(ceilMode===0)updateCeilingVisibility()}else walkStep(dt);
  if(av.visible){av.position.x+=(av.userData.tx-av.position.x)*.15;av.position.z+=(av.userData.tz-av.position.z)*.15}RN.render(S,CAM)})(last);
 try{if(REQUIRE_GMAIL_AUTH&&typeof firebase!=='undefined'){if(!firebase.apps.length)firebase.initializeApp(FB);firebase.auth().onAuthStateChanged(u=>{if(u&&ALLOWED_EMAILS.includes((u.email||'').toLowerCase())){$('gate').style.display='none';boot()}else{$('gate').style.display='flex';if(u){$('gmsg').textContent='⛔ '+u.email+' غير مصرح له';firebase.auth().signOut()}}});
  $('glogin').onclick=()=>firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>$('gmsg').textContent=e.message)}else boot()}catch(e){boot()}
