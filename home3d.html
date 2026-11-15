@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>شقتنا 3D 🏠♥️</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#1a0a10;font:14px system-ui,Tahoma,sans-serif;color:#fff;user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+button,select,input{font:inherit}
+button,select{color:#fff;background:rgba(40,10,24,.9);border:1px solid rgba(255,117,143,.5);border-radius:12px;padding:6px 10px;cursor:pointer;margin:2px}
+button.on{background:#ff2a5f;border-color:#ffd166}
+.bar{position:fixed;top:calc(6px + env(safe-area-inset-top));right:6px;left:6px;z-index:5;display:flex;flex-wrap:wrap;gap:2px;pointer-events:none}
+.bar>*{pointer-events:auto}.hid #tools{display:none}
+.pn{position:fixed;z-index:6;background:rgba(30,6,18,.95);border:1px solid rgba(255,117,143,.45);border-radius:16px;padding:10px;display:none;max-height:44vh;overflow:auto}
+#cat{bottom:8px;right:8px;left:8px}#sel{top:96px;right:8px;width:235px}#wm{bottom:8px;right:8px;left:8px;text-align:center}
+#nb{top:60px;right:8px;left:8px;max-height:70vh}#nb td{padding:3px 6px}
+.gr{display:flex;flex-wrap:wrap}label{display:block;margin:3px 0;font-size:12px}label input[type=range]{width:100%}
+#chat{left:8px;bottom:8px;width:min(340px,calc(100% - 16px));height:48vh;flex-direction:column;padding:6px}
+#msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px}
+.m{position:relative;max-width:85%;padding:6px 12px;border-radius:14px;line-height:1.5;word-break:break-word}.m small{display:block;font-size:10px;opacity:.7}
+.me{align-self:flex-start;background:linear-gradient(135deg,#ff2a5f,#c9184a)}.you{align-self:flex-end;background:#3a0f22;border:1px solid rgba(255,117,143,.4)}
+.rx{position:absolute;bottom:-10px;left:-4px;background:#1e0410;border:1px solid #ff2a5f;border-radius:50%;padding:0 5px}
+.rq{border-right:3px solid #ffd166;background:rgba(0,0,0,.25);border-radius:8px;padding:3px 7px;margin-bottom:4px;font-size:11px;max-height:3.4em;overflow:hidden}.rq b{display:block;color:#ffd166}
+.ri{cursor:pointer;opacity:.7;margin-inline-start:6px}
+#rbar{display:none;align-items:center;gap:6px;padding:5px 8px;font-size:12px;border-right:3px solid #ff2a5f;background:#240a14}#rbar span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.cin{display:flex;gap:4px}.cin input{flex:1;min-width:0;border-radius:20px;border:1px solid #ff2a5f;padding:7px 12px;background:#fff;color:#000}
+#joy{position:fixed;left:18px;bottom:24px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.35);display:none;z-index:4;touch-action:none}
+#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#ff2a5f;pointer-events:none}
+#mv{position:fixed;left:18px;bottom:24px;display:none;z-index:4;flex-direction:column}#mv button{width:60px;height:56px;font-size:22px}
+#toast,#err{position:fixed;left:50%;transform:translateX(-50%);bottom:70px;background:#000c;padding:8px 16px;border-radius:20px;z-index:9;display:none}#err{background:#9d0208;bottom:10px}
+.ov{position:fixed;inset:0;background:#1a0a10;z-index:20;display:none;align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:10px;font-size:18px}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="bar" id="top">
+ <button id="fold">☰</button>
+ <span id="tools">
+  <button data-m="orbit" class="on">🏠 علوي</button><button data-m="walk">🚶 تجول</button><button data-m="gyro">📱 جيرو</button>
+  <button id="fs">⛶</button><button id="un">↩️</button><button id="re">↪️</button><button id="dn">🌙</button><button id="tp">📏</button>
+  <select id="sl"><option value="1">تصميم أساسي 1</option><option value="2">مقترح 2</option><option value="3">مقترح 3</option></select>
+  <button id="bk">🛋️ كتالوج</button><button id="nbb">📒 الدفتر</button><button id="cht">💬</button><button id="hm">🏠 البيت</button>
+ </span>
+</div>
+<div class="pn" id="cat"></div><div class="pn" id="sel"></div><div class="pn" id="wm"></div><div class="pn" id="nb"></div>
+<div class="pn" id="chat"><div id="msgs"></div><div id="rbar"></div><div class="cin"><input id="inp" placeholder="اكتب رسالة… 💌" autocomplete="off"><button id="snd">إرسال</button></div></div>
+<div id="joy"><div id="knob"></div></div>
+<div id="mv"><button id="mf">⬆</button><button id="mb">⬇</button></div>
+<div id="toast"></div><div id="err"></div>
+<input type="file" id="pf" accept="image/*" hidden>
+<div class="ov" id="gate">🔒 الشقة خاصة بمصطفى وفريال<button id="glogin">دخول بحساب جوجل</button><div id="gmsg"></div></div>
+<div class="ov" id="who">مين أنت؟<div><button data-w="مصطفى">أنا مصطفى</button><button data-w="فريال">أنا فريال</button></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+'use strict';
+const FB={apiKey:"AIzaSyCmwupjdLgNzLFyOxNuTTRFgp0yVoyK-YI",authDomain:"love-games-b3018.firebaseapp.com",databaseURL:"https://love-games-b3018-default-rtdb.firebaseio.com",projectId:"love-games-b3018",storageBucket:"love-games-b3018.firebasestorage.app",messagingSenderId:"1005323770246",appId:"1:1005323770246:web:57f360319fe698d1c83407"};
+const REQUIRE_GMAIL_AUTH=false,ALLOWED_EMAILS=['moustafaelsawy7@gmail.com','feryal.yasser.edu@gmail.com'];
+const ROOT='rooms/house_3d/',Q=new URLSearchParams(location.search),$=i=>document.getElementById(i),V3=THREE.Vector3;
+const K=n=>String(n).replace(/[.#$\[\]\/]/g,'_'),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sn=v=>Math.round(v*20)/20,toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3000)};
+window.onerror=m=>{const e=$('err');e.textContent='⚠️ '+m;e.style.display='block'};
+let ME=Q.get('user'),YOU=Q.get('partner'),db=null,ref=null,D={items:{},walls:{},floors:{}},slot=1,hist=[],redo=[],sel=null,mode='orbit',night=0,tape=0,tp=[],PH={},IM={},WG={},WJ={},FL={},FJ={},G,bh=null,wsel=null,tab='app';
+
+/* ===== المشهد ===== */
+const RN=new THREE.WebGLRenderer({canvas:$('c'),antialias:true});RN.setPixelRatio(Math.min(devicePixelRatio,2));RN.shadowMap.enabled=true;RN.outputEncoding=THREE.sRGBEncoding;
+const S=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(55,1,.05,300),root=new THREE.Group(),LB=new THREE.Group();S.add(root,LB);S.background=new THREE.Color(0xcfe3f3);
+const hemi=new THREE.HemisphereLight(0xffffff,0x998877,.7),sun=new THREE.DirectionalLight(0xfff0dd,.9);
+sun.position.set(14,24,10);sun.target.position.set(7,0,4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-12,right:12,top:12,bottom:-12,far:70});sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.0005;S.add(hemi,sun,sun.target);
+const gnd=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0xcdbfb0}));gnd.rotation.x=-Math.PI/2;gnd.position.set(7,-.07,4);gnd.receiveShadow=true;S.add(gnd);
+function rs(){RN.setSize(innerWidth,innerHeight,false);CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+const mat=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.7,metalness:0},o));
+const TXC={};function tex(t){if(TXC[t])return TXC[t];const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');
+ if(t=='wood'){g.fillStyle='#b98a5a';g.fillRect(0,0,128,128);for(let i=0;i<8;i++){g.fillStyle=i%2?'#a97a4c':'#c4966a';g.fillRect(0,i*16,128,15);g.fillStyle='#0003';g.fillRect((i*37)%128,i*16,2,16)}}
+ else if(t=='marble'){g.fillStyle='#f1eeea';g.fillRect(0,0,128,128);g.strokeStyle='#9996';for(let i=0;i<7;i++){g.beginPath();g.moveTo(Math.random()*128,0);g.bezierCurveTo(Math.random()*128,40,Math.random()*128,80,Math.random()*128,128);g.stroke()}}
+ else if(t=='brick'){g.fillStyle='#d9d2c8';g.fillRect(0,0,128,128);for(let r=0;r<8;r++)for(let k=0;k<4;k++){g.fillStyle=(r+k)%2?'#b8643c':'#c4704a';g.fillRect(k*32+(r%2?16:0)-16,r*16+1,30,14)}}
+ else{g.fillStyle='#e9eef0';g.fillRect(0,0,128,128);g.strokeStyle='#8aa';g.lineWidth=3;for(let i=0;i<2;i++)for(let j=0;j<2;j++)g.strokeRect(i*64,j*64,64,64)}
+ const T=new THREE.CanvasTexture(c);T.wrapS=T.wrapT=THREE.RepeatWrapping;T.encoding=THREE.sRGBEncoding;return TXC[t]=T}
+const tx=(t,a,b)=>{const T=tex(t).clone();T.needsUpdate=true;T.repeat.set(a,b);return T};
+
+/* ===== المخطط الهندسي الدقيق (مطابق لكراسة سكن لكل المصريين 5) ===== */
+const Z=[
+ ['salon','الصالة',.3,3.45,5.67,7.88],
+ ['corr','طرقة توزيع',5.67,3.45,10.45,4.58],
+ ['r1','غرفة 1',4.47,0,7.35,3.45],
+ ['r2','غرفة 2',7.35,0,10.45,3.45],
+ ['r3','غرفة 3 (الماستر)',10.45,.45,13.6,4.58],
+ ['kit','المطبخ',5.67,4.58,7.8,7.58],
+ ['man','منشر',7.8,4.58,9.07,5.85],
+ ['bath','الحمام',9.57,4.58,11.85,6.3],
+ ['bal','البلكونة',1.5,2.33,4.57,3.45]
+];
+const DEF={salon:'por',corr:'por',r1:'wood',r2:'wood',r3:'wood',kit:'tile',man:'tile',bath:'tile',bal:'tile'};
+
+// صيغة الفتحة: [نوع, مكان_المنتصف, العرض, اتجاه_الفتح_للداخل(-1 أو 1), مكان_المفصلة(0=بداية أو 1=نهاية)]
+// جميع الأبواب مضبوطة لتفتح للداخل داخل كل غرفة وليس للخارج في الطرقة
+const WALLS=[
+ ['e1',4.47,0,7.35,0,1,0,['w',1.45,1.3]],
+ ['e2',7.35,0,10.45,0,1,0,['w',1.55,1.3]],
+ ['e3',10.45,.45,13.6,.45,1,0,['w',1.55,1.3]],
+ ['e4',13.6,.45,13.6,4.58,1,0],
+ ['e5',13.6,4.58,11.85,4.58,1,0],
+ ['e6',11.85,4.58,11.85,6.3,1,0],
+ ['e7',11.85,6.3,9.07,6.3,1,0,['w',1.1,.7]],
+ ['e8',9.07,6.3,9.07,5.85,1,0],
+ ['e9',9.07,5.85,7.8,5.85,1,0,['w',.65,.9]],
+ ['e10',7.8,5.85,7.8,7.58,1,0,['w',.75,.8]],
+ ['e11',7.8,7.58,5.67,7.58,1,0],
+ ['e12',5.67,7.58,5.67,7.88,1,0],
+ ['e13',5.67,7.88,2.2,7.88,1,0,['w',1.75,2.2]],
+ // باب الشقة الرئيسي (يفتح للداخل في الصالة باتجاه الحائط الأيسر)
+ ['e14',.3,7.88,2.2,7.88,1,0,['d',.65,.95,-1,0]],
+ ['e15',.3,7.88,.3,3.45,1,0],
+ ['e16',.3,3.45,4.47,3.45,1,0,['g',2.7,1.6]],
+ ['e17',4.47,3.45,4.47,0,1,0],
+ // سور البلكونة
+ ['b1',1.5,2.33,4.57,2.33,1,1],
+ ['b2',1.5,2.33,1.5,3.45,1,1],
+ ['b3',4.57,2.33,4.57,3.45,1,1],
+ // باب غرفة 1 (يفتح للداخل في غرفة 1 باتجاه الحائط الفاصل)
+ ['i1',4.47,3.45,7.35,3.45,0,0,['d',2.3,.9,-1,1]],
+ // باب غرفة 2 (يفتح للداخل في غرفة 2 باتجاه الحائط الفاصل)
+ ['i2',7.35,3.45,10.45,3.45,0,0,['d',.6,.9,-1,0]],
+ // الحائط الفاصل بين غرفة 1 وغرفة 2
+ ['i3',7.35,0,7.35,3.45,0,0],
+ // الحائط الفاصل بين غرفة 2 وغرفة 3 (مصمت)
+ ['i4',10.45,0,10.45,3.45,0,0],
+ // باب غرفة 3 الماستر (في نهاية طرقة التوزيع ويفتح للداخل جوه غرفة 3)
+ ['i4b',10.45,3.45,10.45,4.58,0,0,['d',.56,.9,-1,1]],
+ // الحائط الفاصل بين غرفة 3 والحمام (مصمت تماماً بدون أي باب بينهما)
+ ['i5',10.45,4.58,11.85,4.58,0,0],
+ // باب الحمام المستقل في آخر الطرقة (يفتح للداخل جوه الحمام)
+ ['i6',9.57,4.58,10.45,4.58,0,0,['d',.44,.76,1,0]],
+ // الحائط الأيسر للحمام بجوار المسقط (مصمت)
+ ['i7',9.57,4.58,9.57,6.3,0,0],
+ // باب المطبخ (يفتح للداخل جوه المطبخ)
+ ['i8',5.67,4.58,7.8,4.58,0,0,['d',.6,.85,1,0]],
+ // الحائط الفاصل بين الصالة والمطبخ
+ ['i9',5.67,4.58,5.67,7.58,0,0],
+ // باب المنشر (يفتح للداخل جوه المنشر)
+ ['i10',7.8,4.58,9.07,4.58,0,0,['d',.63,.75,1,1]],
+ // الحائط بين المطبخ والمنشر
+ ['i11',7.8,4.58,7.8,5.85,0,0],
+ // حائط مسقط التهوية العلوي
+ ['i12',9.07,4.58,9.57,4.58,0,0]
+];
+const OT={d:[.9,0,2.1],a:[1.6,0,2.2],w:[1.3,.9,2.1],s:[1.7,.95,1.45],g:[1.6,0,2.2]};
+
+function buildWall(w){
+ const [id,x1,z1,x2,z2,ext,rail,op]=w,st=D.walls[id]||{},o=st.o||(op?op[0]:'n'),L=Math.hypot(x2-x1,z2-z1),T=ext?.22:.14,H=rail?1:2.7;
+ if(WG[id]){root.remove(WG[id]);WG[id].traverse(m=>m.geometry&&m.geometry.dispose())}
+ const g=new THREE.Group();g.position.set((x1+x2)/2,0,(z1+z2)/2);g.rotation.y=-Math.atan2(z2-z1,x2-x1);WG[id]=g;root.add(g);
+ const fm=(c,t)=>t?mat('#fff',{map:tx(t,2,1.4)}):mat(c||'#f4efe6'),E=mat('#d8d1c6'),ms=[E,E,E,E,fm(st.a,st.am),fm(st.b,st.bm)];
+ const pc=(a,b,y0,y1)=>{if(b-a<=.01)return;const m=new THREE.Mesh(new THREE.BoxGeometry(b-a,y1-y0,T),ms);m.position.set((a+b)/2-L/2,(y0+y1)/2,0);m.castShadow=m.receiveShadow=true;m.userData.wid=id;g.add(m)};
+ if(o=='x'){const m=new THREE.Mesh(new THREE.BoxGeometry(L,H,T),new THREE.MeshBasicMaterial({color:0xff2a5f,transparent:true,opacity:.1,depthWrite:false}));m.userData.wid=id;g.add(m);return}
+ if(o=='n'||rail){pc(0,L,0,H);return}
+ const [dw,y0,y1]=OT[o],wd=op&&op[0]==o?op[2]:Math.min(dw,L-.12),al=op?Math.min(Math.max(op[1],wd/2+.05),L-wd/2-.05):L/2,a=al-wd/2,b=al+wd/2;
+ pc(0,a,0,H);pc(b,L,0,H);if(y0>0)pc(a,b,0,y0);if(y1<H)pc(a,b,y1,H);
+ if(o=='w'||o=='g'){const gl=new THREE.Mesh(new THREE.PlaneGeometry(wd,y1-y0),mat('#bfe6ff',{transparent:true,opacity:.3,roughness:.1}));gl.position.set(al-L/2,(y0+y1)/2,0);g.add(gl)}
+ if(o=='s'){const m=new THREE.Mesh(new THREE.BoxGeometry(wd+.1,.05,T+.25),mat('#fff',{map:tx('marble',1,1)}));m.position.set(al-L/2,y0,0);m.castShadow=true;m.userData.wid=id;g.add(m)}
+ if(o=='d'){
+  const defSw=op&&op[3]!==undefined?op[3]:-1,defHg=op&&op[4]!==undefined?op[4]:0;
+  const sw=st.sw?defSw*-1:defSw,hg=st.hg!==undefined?(defHg^st.hg):defHg;
+  const pv=new THREE.Group();
+  pv.position.set((hg?b:a)-L/2,0,sw*(T/2));
+  pv.rotation.y=(hg?1:-1)*sw*1.32;
+  const l=new THREE.Mesh(new THREE.BoxGeometry(wd,2.05,.04),mat('#8c5832'));
+  l.position.set((hg?-1:1)*(wd/2),1.025,0);
+  const hnd=new THREE.Mesh(new THREE.BoxGeometry(.08,.03,.08),mat('#ffd166',{metalness:.8,roughness:.2}));
+  hnd.position.set((hg?-1:1)*(wd-.1),1.0,0);
+  l.add(hnd);l.castShadow=true;l.userData.wid=id;pv.add(l);g.add(pv);
+ }
+}
+function buildFloor(z){const [id,nm,x1,z1,x2,z2]=z,t=D.floors[id]||DEF[id];let m=FL[id];
+ if(!m){m=new THREE.Mesh(new THREE.BoxGeometry(x2-x1,.06,z2-z1),mat('#fff'));m.position.set((x1+x2)/2,-.03+Z.indexOf(z)*.0005,(z1+z2)/2);m.receiveShadow=true;m.userData.zone=id;root.add(m);FL[id]=m}
+ m.material=t=='por'?mat('#ebe7de',{roughness:.12,metalness:.15}):mat('#fff',{map:tx(t,(x2-x1)/1.2,(z2-z1)/1.2)})}
+function label(t,x,zz){const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');g.fillStyle='rgba(60,10,30,.8)';g.fillRect(0,0,256,64);g.fillStyle='#fff';g.font='bold 28px Tahoma';g.textAlign='center';g.fillText(t,128,42);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));s.scale.set(1.9,.48,1);s.position.set(x,3.3,zz);return s}
+Z.forEach(z=>LB.add(label(z[1],(z[2]+z[4])/2,(z[3]+z[5])/2)));
+{const sh=new THREE.Mesh(new THREE.BoxGeometry(.5,2.7,1.27),mat('#555'));sh.position.set(9.32,1.35,5.215);sh.castShadow=true;root.add(sh);LB.add(label('مسقط تهوية',9.32,5.215))}
+
+/* ===== كتالوج الأثاث (مجسمات برمجية) ===== */
+const col=c=>c==='glass'?mat('#bfe6ff',{transparent:true,opacity:.28,roughness:.1}):mat(typeof c=='number'?'#fff':c);
+function B(w,h,d,x,y,z,c,e){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),col(c));m.position.set(x,y+h/2,z);m.castShadow=m.receiveShadow=true;if(typeof c=='number')m.userData.s=c;if(e){m.material.emissive.set(e)}G.add(m)}
+function C(r,h,x,y,z,c,rx){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,20),col(c));m.position.set(x,y+h/2,z);if(rx)m.rotation.x=Math.PI/2;m.castShadow=true;if(typeof c=='number')m.userData.s=c;G.add(m)}
+function Sp(r,x,y,z,c,e){const m=new THREE.Mesh(new THREE.SphereGeometry(r,12,10),col(c));m.position.set(x,y,z);m.castShadow=true;if(e)m.material.emissive.set(e);G.add(m)}
+function LT(y,k){const l=new THREE.PointLight(0xffd9a0,0,7,2);l.position.set(0,y,0);l.userData.k=k||1;G.add(l)}
+const P4=(a,b,f)=>[[-a,-b],[a,-b],[-a,b],[a,b]].forEach(p=>f(p[0],p[1]));
+const fFr=()=>{B(.7,1.8,.7,0,0,0,1);B(.02,.6,.03,.3,1.1,.36,2);B(.02,.5,.03,.3,.4,.36,2);B(.7,.015,.01,0,1.15,.355,'#333')};
+const fWm=()=>{B(.6,.85,.6,0,0,0,1);C(.2,.02,0,.42,.31,'#223',1);B(.5,.05,.01,0,.78,.305,2)};
+const fCab=()=>{B(.6,.82,.6,0,0,0,1);B(.62,.04,.62,0,.82,0,'#f2f2f2');B(.25,.02,.02,0,.62,.31,2)};
+const fCh=()=>{B(.5,.05,.5,0,.45,0,1);B(.5,.5,.05,0,.5,-.23,1);C(.03,.45,0,0,0,'#333');C(.25,.03,0,0,0,'#333')};
+const fCu=()=>{B(1.6,2.4,.06,0,0,0,1);B(.04,2.4,.1,-.5,0,0,2);B(.04,2.4,.1,.5,0,0,2)};
+const fCd=()=>{C(.015,.5,0,2.2,0,'#999');C(.3,.04,0,2.15,0,1);for(let i=0;i<6;i++){const a=i*1.047;Sp(.06,Math.cos(a)*.28,2.12,Math.sin(a)*.28,'#fff3d6','#ffe2b0')}LT(2)};
+const fFr2=(w,h)=>()=>{B(w+.06,h+.06,.03,0,0,0,'#3b2a20');const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({color:'#e8e2da'}));p.position.set(0,(h+.06)/2,.02);p.userData.img=1;G.add(p)};
+const CAT=[
+['fridge','ثلاجة بابين','app','#cfd3d8','#555',fFr],['fridge2','ثلاجة سوداء','app','#1c1c20','#888',fFr],
+['stove','بوتاجاز + شفاط','app','#d6d6d6','#444',()=>{B(.6,.85,.6,0,0,0,1);B(.58,.02,.58,0,.85,0,'#222');P4(.14,.14,(x,z)=>C(.07,.02,x,.87,z,'#555'));B(.42,.3,.01,0,.35,.305,'#111');B(.35,.02,.03,0,.7,.32,2);B(.6,.12,.45,0,1.7,-.08,1);B(.22,.6,.2,0,1.8,-.15,1)}],
+['washer','غسالة أوتوماتيك','app','#e8e8e8','#778',fWm],['dish','غسالة أطباق','app','#c9ced3','#778',fWm],
+['micro','ميكروويف','app','#2a2a2e','#999',()=>{B(.5,.3,.4,0,0,0,1);B(.32,.2,.01,-.07,.05,.205,'#111');B(.08,.2,.01,.17,.05,.205,2)},.9],
+['kettle','كاتيل','app','#c0c0c0','#222',()=>{C(.1,.22,0,0,0,1);C(.08,.04,0,.22,0,2);B(.02,.15,.03,.12,.04,0,2)},.9],
+['coffee','ماكينة قهوة','app','#222','#c0c0c0',()=>{B(.25,.35,.3,0,0,0,1);B(.12,.1,.12,0,.05,.12,2);C(.04,.08,0,.0,.12,2)},.9],
+['tv','تلفزيون سمارت','app','#0b0b10','#16263f',()=>{B(1.2,.7,.05,0,0,0,'#0b0b10');B(1.14,.64,.01,0,.03,.03,'#16263f')},1],
+['ac','تكييف سبليت','app','#f4f4f4','#ccc',()=>{B(.9,.28,.2,0,0,0,1);B(.8,.03,.02,0,.05,.105,2)},2.2],
+['heater','سخان','app','#f0f0f0','#999',()=>{C(.2,.6,0,0,0,1);C(.03,.1,0,.6,0,2)},1.6],
+['cab','وحدة مطبخ سفلية','kb','#f1ede6','#555',fCab],['wcab','وحدة مطبخ علوية','kb','#f1ede6','#555',()=>{B(.6,.7,.35,0,0,0,1);B(.25,.02,.02,0,.08,.18,2)},1.4],
+['sink','حوض مطبخ','kb','#e9e5de','#9aa',()=>{fCab();B(.5,.02,.4,0,.86,0,2);C(.015,.25,0,.86,-.2,'#aaa')}],
+['bar','بار أمريكي','kb','#8b6a4a','#555',()=>{B(1.8,1,.5,0,0,0,1);B(1.9,.05,.65,0,1,.05,'#f4f4f4')}],
+['stool','كرسي بار','kb','#222','#888',()=>{C(.17,.05,0,.65,0,1);C(.02,.65,0,0,0,2);C(.15,.02,0,0,0,2)}],
+['shower','كابينة شاور','kb','#ddd','#999',()=>{B(.9,.04,.9,0,0,0,'#ddd');B(.9,2,.02,0,.04,.44,'glass');B(.02,2,.9,.44,.04,0,'glass');C(.03,.3,-.35,1.9,-.35,2)}],
+['tub','بانيو','kb','#f7f7f7','#bfe3f2',()=>{B(1.7,.55,.75,0,0,0,1);B(1.5,.02,.55,0,.54,0,2)}],
+['basin','حوض + مراية','kb','#f2f2f2','#cfe8f5',()=>{B(.6,.8,.45,0,0,0,1);B(.5,.03,.35,0,.82,0,'#fff');B(.6,.8,.03,0,1.25,-.21,2,'#335')}],
+['wc','قاعدة حمام','kb','#ffffff','#eeeeee',()=>{B(.4,.4,.3,0,0,.1,1);B(.38,.4,.16,0,.4,-.12,1);C(.17,.02,0,.4,.1,2)}],
+['sofa','كنبة','liv','#b08968','#e6d5b8',()=>{B(2,.4,.9,0,0,0,1);B(2,.5,.25,0,.4,-.33,1);B(.2,.3,.7,-.9,.4,.1,1);B(.2,.3,.7,.9,.4,.1,1);[-.55,0,.55].forEach(x=>B(.55,.12,.6,x,.4,.08,2))}],
+['lsofa','ركنة L','liv','#8d99ae','#edf2f4',()=>{B(2.6,.4,.9,0,0,-.4,1);B(1,.4,.8,-.8,0,.45,1);B(2.6,.5,.25,0,.4,-.78,1);B(.25,.5,1.6,-1.2,.4,0,1);[-.8,0,.8].forEach(x=>B(.7,.12,.6,x,.4,-.4,2))}],
+['arm','كرسي فوتيه','liv','#c9ada7','#4a4e69',()=>{B(.8,.4,.8,0,0,0,1);B(.8,.5,.2,0,.4,-.3,1);B(.15,.25,.6,-.33,.4,.1,1);B(.15,.25,.6,.33,.4,.1,1)}],
+['ctab','ترابيزة قهوة','liv','#d9c3a5','#444',()=>{B(1,.04,.6,0,.36,0,1);P4(.45,.25,(x,z)=>C(.03,.36,x,0,z,2))}],
+['tvu','مكتبة تلفزيون','liv','#6b4a35','#d9c3a5',()=>{B(2.4,.45,.4,0,0,0,1);B(.4,1.9,.3,-1,.45,0,1);B(.4,1.9,.3,1,.45,0,1);B(2.4,.12,.3,0,2.35,0,1);B(1.6,.04,.28,0,1.4,0,2)}],
+['dine','سفرة + 4 كراسي','liv','#7a5a3c','#d9c3a5',()=>{B(1.6,.05,.9,0,.72,0,1);P4(.7,.38,(x,z)=>C(.04,.72,x,0,z,'#333'));P4(.4,.65,(x,z)=>{B(.42,.05,.42,x,.45,z,2);B(.42,.45,.05,x,.5,z+(z>0?.19:-.19),2);C(.025,.45,x,0,z,'#333')})}],
+['cons','جزامة المدخل','liv','#8b6a4a','#e6d5b8',()=>{B(.9,.95,.3,0,0,0,1);B(.6,.02,.01,0,.5,.155,2)}],
+['bed','سرير ماستر','bed','#c9b8a6','#9fb3c8',()=>{B(1.8,.3,2.1,0,0,0,'#5a3d2b');B(1.7,.22,2,0,.3,0,'#f3f0ea');B(1.9,1.1,.12,0,0,-1.05,1);B(.6,.12,.35,-.45,.52,-.78,'#fff');B(.6,.12,.35,.45,.52,-.78,'#fff');B(1.72,.06,1.3,0,.5,.3,2)}],
+['bed1','سرير فردي','bed','#c9b8a6','#9fb3c8',()=>{B(.95,.28,2,0,0,0,'#7a5a3c');B(.9,.2,1.9,0,.28,0,'#f3f0ea');B(.95,.8,.1,0,0,-1,1);B(.5,.1,.3,0,.48,-.7,'#fff');B(.92,.05,1.1,0,.46,.35,2)}],
+['ward','دولاب جرار','bed','#e8e0d4','#555',()=>{B(2,2.2,.6,0,0,0,1);B(.02,2.1,.01,0,.05,.305,'#555');B(.02,.3,.02,-.06,1,.31,2);B(.02,.3,.02,.06,1,.31,2)}],
+['ward2','دولاب درف','bed','#d9c3a5','#555',()=>{B(1.5,2.2,.6,0,0,0,1);B(.02,2.1,.01,-.25,.05,.305,'#555');B(.02,2.1,.01,.25,.05,.305,'#555');B(.02,.3,.02,-.2,1,.31,2);B(.02,.3,.02,.2,1,.31,2)}],
+['night','كومودينو','bed','#d9c3a5','#8b6a4a',()=>{B(.45,.5,.4,0,0,0,1);B(.4,.02,.42,0,.5,0,2)}],
+['dress','تسريحة + مراية','bed','#f1ede6','#cfe8f5',()=>{B(1.1,.78,.45,0,0,0,1);B(.9,.9,.03,0,.9,-.2,2)}],
+['desk','مكتب','bed','#d9c3a5','#8b6a4a',()=>{B(1.2,.04,.6,0,.72,0,1);P4(.55,.25,(x,z)=>C(.025,.72,x,0,z,'#333'));B(.4,.3,.5,.35,.42,0,2)}],
+['chair','كرسي مكتب','bed','#333','#555',fCh],
+['rug','سجادة مستطيلة','dec','#c9ada7','#fff',()=>B(2,.02,1.4,0,0,0,1)],['rugr','سجادة دائرية','dec','#9fb3c8','#fff',()=>C(.9,.02,0,0,0,1)],['runner','ممشى','dec','#8d99ae','#fff',()=>B(.7,.02,2.2,0,0,0,1)],
+['curt','ستارة شيفون','dec','#f5efe6','#d9c3a5',fCu],['curt2','ستارة بلاك أوت','dec','#4a4e69','#222',fCu],
+['chand','نجف مودرن','dec','#ffffff','#d4af37',fCd],['chand2','نجف كلاسيك','dec','#d4af37','#fff3d6',()=>{fCd();C(.2,.03,0,2.35,0,2)}],
+['lamp','أباجورة أرضية','dec','#222','#ffe2b0',()=>{C(.15,.03,0,0,0,1);C(.015,1.45,0,.03,0,1);C(.2,.3,0,1.4,0,2);LT(1.5,.7)}],
+['spot','سبوت','dec','#ddd','#fff',()=>{C(.06,.06,0,2.62,0,1);Sp(.04,0,2.6,0,'#fff','#fff');LT(2.55,.6)}],
+['plant','زرع أخضر','dec','#8b5a3c','#3c8c4a',()=>{C(.18,.3,0,0,0,1);Sp(.25,0,.55,0,2);Sp(.18,.1,.8,.05,'#4aa35a');Sp(.15,-.1,.9,-.05,'#2f7a3d')}],
+['swing','مرجيحة بلكونة','dec','#c9ada7','#8b6a4a',()=>{B(1,.06,.5,0,.45,0,1);B(.04,1.9,.04,-.48,.45,0,2);B(.04,1.9,.04,.48,.45,0,2);B(1.1,.04,.1,0,2.35,0,2)}],
+['frame','برواز صور 60×45','dec','#3b2a20','#fff',fFr2(.6,.45),1.3],['frame2','برواز مربع','dec','#3b2a20','#fff',fFr2(.4,.4),1.3],['frame3','برواز كبير','dec','#3b2a20','#fff',fFr2(.9,.6),1.2]];
+const CATM=Object.fromEntries(CAT.map(c=>[c[0],{n:c[1],t:c[2],c1:c[3],c2:c[4],f:c[5],y:c[6]||0}])),LI=new Set(['chand','chand2','lamp','spot']);
+const TABS=[['app','أجهزة'],['kb','مطبخ وحمام'],['liv','صالة'],['bed','نوم'],['dec','ديكور']];
+
+/* ===== بناء/مزامنة ===== */
+function mk(id,it){const c=CATM[it.t];if(!c)return;if(IM[id])root.remove(IM[id]);G=new THREE.Group();c.f();
+ G.traverse(m=>{const s=m.userData.s;if(s)m.material.color.set(s==1?(it.c1||c.c1):(it.c2||c.c2))});
+ G.position.set(it.x,it.y||0,it.z);G.rotation.y=it.r||0;G.scale.set(it.sx||1,it.sy||1,it.sz||1);G.userData={iid:id,j:JSON.stringify(it)};root.add(G);IM[id]=G;
+ if(PH[id])photo(id,PH[id]);if(sel==id)hl();light()}
+function light(){S.background.set(night?0x0b1020:0xcfe3f3);hemi.intensity=night?.18:.7;sun.intensity=night?.05:.9;
+ for(const id in IM)IM[id].traverse(o=>{if(o.isPointLight)o.intensity=night&&(D.items[id]||{}).on!==0?.9*o.userData.k:0});$('dn').textContent=night?'☀️':'🌙'}
+function apply(){
+ for(const id in IM)if(!D.items[id]){root.remove(IM[id]);delete IM[id];if(sel==id){sel=null;hl();showSel()}}
+ for(const id in D.items){const j=JSON.stringify(D.items[id]);if(!IM[id]||IM[id].userData.j!==j)mk(id,D.items[id])}
+ WALLS.forEach(w=>{const j=JSON.stringify(D.walls[w[0]]||0);if(WJ[w[0]]!==j){WJ[w[0]]=j;buildWall(w)}});
+ Z.forEach(z=>{const j=D.floors[z[0]]||'';if(FJ[z[0]]!==j||!FL[z[0]]){FJ[z[0]]=j;buildFloor(z)}});
+ light();if($('nb').style.display=='block')nb()}
+function saveLocal(){try{localStorage.setItem('house3d_slot_'+slot,JSON.stringify(D))}catch(e){}}
+function loadLocal(){try{const s=localStorage.getItem('house3d_slot_'+slot);if(s){const v=JSON.parse(s);D={items:v.items||{},walls:v.walls||{},floors:v.floors||{}}}}catch(e){}}
+function put(path,val){const p=path.split('/');let o=D;for(let i=0;i<p.length-1;i++)o=o[p[i]]=o[p[i]]||{};if(val===null)delete o[p[p.length-1]];else o[p[p.length-1]]=val;
+ saveLocal();if(ref)ref.child(path).set(val);hist.push(JSON.stringify(D));if(hist.length>31)hist.shift();redo=[];apply()}
+function listen(){if(ref)ref.off();hist=[];redo=[];loadLocal();if(!hist.length)hist.push(JSON.stringify(D));apply();
+ if(!db)return;ref=db.ref(ROOT+'designs/'+slot);
+ ref.on('value',s=>{const v=s.val();if(v){D={items:v.items||{},walls:v.walls||{},floors:v.floors||{}};saveLocal()}if(!hist.length)hist.push(JSON.stringify(D));apply()})}
+function undo(){if(hist.length<2)return;redo.push(hist.pop());D=JSON.parse(hist[hist.length-1]);saveLocal();if(ref)ref.set(D);apply()}
+function redoF(){if(!redo.length)return;const s=redo.pop();hist.push(s);D=JSON.parse(s);saveLocal();if(ref)ref.set(D);apply()}
+function hl(){if(bh){S.remove(bh);bh=null}if(sel&&IM[sel]){bh=new THREE.BoxHelper(IM[sel],0xffd166);S.add(bh)}}
+function photo(id,url){PH[id]=url;const g=IM[id];if(!g)return;const im=new Image();im.onload=()=>g.traverse(m=>{if(m.userData.img){const t=new THREE.Texture(im);t.encoding=THREE.sRGBEncoding;t.needsUpdate=true;m.material.map=t;m.material.color.set('#fff');m.material.needsUpdate=true}});im.src=url}
+
+/* ===== الواجهة ===== */
+function selItem(id){sel=id;hl();showSel();$('wm').style.display='none'}
+function showSel(){const p=$('sel');if(!sel||!D.items[sel]){p.style.display='none';return}const it=D.items[sel],c=CATM[it.t];p.style.display='block';
+ const sl=(k,l,a,b,v)=>`<label>${l}<input type="range" data-k="${k}" min="${a}" max="${b}" step=".05" value="${v}"></label>`;
+ p.innerHTML=`<b>${c.n}</b> <button data-a="x">✕</button><br><button data-a="rl">⟲</button><button data-a="rr">⟳</button><button data-a="dup">⧉</button><button data-a="del">🗑</button><br><button data-a="n-x">◀</button><button data-a="n+x">▶</button><button data-a="n-z">▲</button><button data-a="n+z">▼</button>`
+ +sl('sx','عرض',.4,2.5,it.sx||1)+sl('sy','ارتفاع',.4,2.5,it.sy||1)+sl('sz','عمق',.4,2.5,it.sz||1)+sl('y','عن الأرض',0,2.6,it.y||0)
+ +`<label>لون 1 <input type="color" data-k="c1" value="${it.c1||c.c1}"> لون 2 <input type="color" data-k="c2" value="${it.c2||c.c2}"></label>`
+ +(it.t.startsWith('frame')?'<button data-a="ph">📸 رفع صورة من جهازي</button>':'')+(LI.has(it.t)?'<button data-a="lt">💡 تشغيل/إطفاء</button>':'')}
+$('sel').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k||!sel)return;D.items[sel]=Object.assign({},D.items[sel],{[k]:e.target.type=='range'?+e.target.value:e.target.value});mk(sel,D.items[sel])});
+$('sel').addEventListener('change',e=>{if(e.target.dataset.k&&sel)put('items/'+sel,D.items[sel])});
+$('sel').addEventListener('click',e=>{const a=e.target.dataset.a;if(!a||!sel)return;const it=D.items[sel];
+ if(a=='x'){sel=null;hl();showSel()}else if(a=='del'){const id=sel;sel=null;hl();showSel();put('items/'+id,null)}
+ else if(a=='dup'){const id='i'+Date.now().toString(36);put('items/'+id,Object.assign({},it,{x:it.x+.4,z:it.z+.4}));selItem(id)}
+ else if(a=='rl'||a=='rr')put('items/'+sel,Object.assign({},it,{r:(it.r||0)+(a=='rl'?1:-1)*Math.PI/12}));
+ else if(a[0]=='n'){const k=a[2];put('items/'+sel,Object.assign({},it,{[k]:+(it[k]+(a[1]=='-'?-.1:.1)).toFixed(2)}))}
+ else if(a=='ph')$('pf').click();else if(a=='lt')put('items/'+sel,Object.assign({},it,{on:it.on===0?1:0}))});
+$('pf').onchange=e=>{const f=e.target.files[0];if(!f||!sel)return;const id=sel,im=new Image();im.onload=()=>{const r=Math.min(1,640/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*r;c.height=im.height*r;c.getContext('2d').drawImage(im,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',.72);photo(id,u);if(db)db.ref(ROOT+'photos/'+id).set(u);toast('اتحفظت الصورة ✅')};im.src=URL.createObjectURL(f);e.target.value=''};
+function cat(){$('cat').innerHTML=TABS.map(t=>`<button data-t="${t[0]}" class="${t[0]==tab?'on':''}">${t[1]}</button>`).join('')+'<div class="gr">'+CAT.filter(c=>c[2]==tab).map(c=>`<button data-k="${c[0]}">${c[1]}</button>`).join('')+'</div>'}
+$('cat').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.t){tab=b.dataset.t;cat()}else if(b.dataset.k){const c=CATM[b.dataset.k];let x=cam.tx,z=cam.tz;if(mode!='orbit'){const f=fwd();x=wx+f.x*2;z=wz+f.z*2}const id='i'+Date.now().toString(36);put('items/'+id,{t:b.dataset.k,x:sn(x),z:sn(z),y:c.y,r:0});selItem(id)}};
+function wmenu(id,f){wsel={id,f};const w=WALLS.find(x=>x[0]==id),p=$('wm');p.style.display='block';$('sel').style.display='none';sel=null;hl();
+ const OB=[['x','🔨 هدم'],['d','🚪 باب'],['a','⛩ آرش'],['s','🍽 شباك مناولة'],['w','🪟 شباك'],['g','باب زجاج'],['n','🧱 صلب'],['r','↺ الأصل']];
+ p.innerHTML=`<b>${w[5]?'جدار خارجي':'جدار داخلي'}</b> — الوجه: <button data-f="a" class="${f=='a'?'on':''}">أ</button><button data-f="b" class="${f=='b'?'on':''}">ب</button><button data-a="x">✕</button><br>`
+ +(w[6]?'':OB.map(o=>`<button data-o="${o[0]}">${o[1]}</button>`).join('')+'<button data-sw="1">🔄 عكس فتح الباب</button><button data-hg="1">↔️ تبديل المفصلة</button>')+'<br>'+['#f5f0e6','#e6d5b8','#d9c3a5','#e8d6c0','#cfcfcf','#ffffff'].map(c=>`<button data-c="${c}" style="background:${c};width:34px;height:26px"></button>`).join('')+'<input type="color" data-cc value="#f4efe6"><br>'+[['marble','رخام'],['wood','خشب'],['brick','طوب'],['tile','سيراميك']].map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join('')}
+function fmenu(z){wsel=null;$('sel').style.display='none';sel=null;hl();const p=$('wm');p.style.display='block';p.innerHTML=`<b>أرضية ${Z.find(x=>x[0]==z)[1]}</b> <button data-a="x">✕</button><br>`+[['por','بورسلين لامع'],['wood','باركيه'],['marble','رخام'],['tile','سيراميك']].map(t=>`<button data-fz="${z}" data-ft="${t[0]}">${t[1]}</button>`).join('')}
+$('wm').addEventListener('click',e=>{const d=e.target.dataset;if(d.a=='x'){$('wm').style.display='none';return}if(d.fz){put('floors/'+d.fz,d.ft);return}if(!wsel)return;const id=wsel.id,s=Object.assign({},D.walls[id]);
+ if(d.f)wmenu(id,d.f);else if(d.o){if(d.o=='r'){delete s.o;delete s.sw;delete s.hg}else s.o=d.o;put('walls/'+id,s)}
+ else if(d.sw){s.sw=s.sw?0:1;put('walls/'+id,s)}else if(d.hg){s.hg=s.hg?0:1;put('walls/'+id,s)}
+ else if(d.c){s[wsel.f]=d.c;s[wsel.f+'m']='';put('walls/'+id,s)}else if(d.t){s[wsel.f+'m']=d.t;put('walls/'+id,s)}});
+$('wm').addEventListener('change',e=>{if(e.target.dataset.cc===undefined||!wsel)return;const s=Object.assign({},D.walls[wsel.id]);s[wsel.f]=e.target.value;s[wsel.f+'m']='';put('walls/'+wsel.id,s)});
+function nb(){let tot=0,bo=0;const rows=Object.entries(D.items).map(([id,it])=>{tot+=+it.p||0;if(it.ok)bo+=+it.p||0;return`<tr><td>${CATM[it.t].n}</td><td><input type="number" min="0" data-id="${id}" data-k="p" value="${it.p||0}" style="width:90px"> ج</td><td><input type="checkbox" data-id="${id}" data-k="ok" ${it.ok?'checked':''}> ✅</td></tr>`}).join('');
+ $('nb').innerHTML=`<b>📒 دفتر شقتنا والتكلفة</b> <button data-x>✕</button><table>${rows||'<tr><td>مفيش قطع لسه</td></tr>'}</table><div>الإجمالي: ${tot} ج | اشترينا: ${bo} ج | المتبقي: ${tot-bo} ج</div>`}
+$('nb').addEventListener('change',e=>{const d=e.target.dataset;if(d.id){put('items/'+d.id+'/'+d.k,d.k=='ok'?e.target.checked:(+e.target.value||0))}});
+$('nb').addEventListener('click',e=>{if(e.target.dataset.x!==undefined)$('nb').style.display='none'});
+const show=id=>{['cat','nb','chat'].forEach(k=>{if(k!=id)$(k).style.display='none'});const e=$(id);e.style.display=e.style.display=='block'||e.style.display=='flex'?'none':(id=='chat'?'flex':'block');if(id=='cat')cat();if(id=='nb')nb()};
+$('bk').onclick=()=>show('cat');$('nbb').onclick=()=>show('nb');$('cht').onclick=()=>show('chat');$('fold').onclick=()=>$('top').classList.toggle('hid');
+$('hm').onclick=()=>{const h=Q.get('home');h?location.href=h:window.close()};
+$('un').onclick=undo;$('re').onclick=redoF;$('dn').onclick=()=>{night=night?0:1;light()};
+$('tp').onclick=()=>{tape=tape?0:1;tp=[];tl.visible=false;$('tp').classList.toggle('on',!!tape);toast(tape?'اضغط على نقطتين لقياس المسافة':'اتقفلت أداة القياس')};
+$('sl').onchange=e=>{slot=+e.target.value;sel=null;hl();showSel();for(const id in IM){root.remove(IM[id]);delete IM[id]}listen()};
+$('fs').onclick=()=>{const d=document,e=d.documentElement;if(!d.fullscreenElement&&!d.webkitFullscreenElement)(e.requestFullscreen||e.webkitRequestFullscreen).call(e);else(d.exitFullscreen||d.webkitExitFullscreen).call(d)};
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+
+/* ===== الكاميرا والتحكم ===== */
+const cam={tx:7,tz:4,r:21,az:.5,pol:.85};let wx=1.5,wz=6.5,yaw=Math.PI,pit=0;const keys={},jv={x:0,y:0},mvb={f:0};
+function oc(){const s=Math.sin(cam.pol);CAM.position.set(cam.tx+cam.r*s*Math.sin(cam.az),cam.r*Math.cos(cam.pol),cam.tz+cam.r*s*Math.cos(cam.az));CAM.lookAt(cam.tx,0,cam.tz)}
+function fwd(){if(mode=='gyro'){const v=new V3(0,0,-1).applyQuaternion(CAM.quaternion);v.y=0;return v.normalize()}return new V3(-Math.sin(yaw),0,-Math.cos(yaw))}
+function walkStep(dt){const f=(keys.w||keys.ArrowUp?1:0)-(keys.s||keys.ArrowDown?1:0)-jv.y+mvb.f,s=(keys.d||keys.ArrowRight?1:0)-(keys.a||keys.ArrowLeft?1:0)+jv.x,v=fwd(),sp=2.2*dt;
+ wx+=(v.x*f-v.z*s)*sp;wz+=(v.z*f+v.x*s)*sp;CAM.position.set(wx,1.6,wz);if(mode=='walk')CAM.rotation.set(pit,yaw,0,'YXZ')}
+function setMode(m){if(m!='orbit'&&mode=='orbit'){wx=cam.tx;wz=cam.tz}mode=m;LB.visible=m=='orbit';$('joy').style.display=m=='walk'?'block':'none';$('mv').style.display=m=='gyro'?'flex':'none';
+ document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m==m));if(m=='gyro')gyroOn()}
+const q1=new THREE.Quaternion(-Math.SQRT1_2,0,0,Math.SQRT1_2),q0=new THREE.Quaternion(),eu=new THREE.Euler(),zee=new V3(0,0,1);
+function gyroOn(){if(gyroOn.d)return;const go=()=>{gyroOn.d=1;addEventListener('deviceorientation',gy)},O=window.DeviceOrientationEvent;
+ if(O&&O.requestPermission)O.requestPermission().then(r=>r=='granted'?go():toast('لازم تسمح بحساس الحركة')).catch(()=>toast('الحساس مش متاح'));else go()}
+function gy(e){if(mode!='gyro'||e.alpha==null)return;const d=THREE.MathUtils.degToRad,o=d((screen.orientation&&screen.orientation.angle)||window.orientation||0);eu.set(d(e.beta),d(e.alpha),-d(e.gamma),'YXZ');CAM.quaternion.setFromEuler(eu).multiply(q1).multiply(q0.setFromAxisAngle(zee,-o))}
+const jk=$('joy'),kn=$('knob');let jp=null;
+function jm(e){const r=jk.getBoundingClientRect(),x=(e.clientX-r.left-r.width/2)/(r.width/2),y=(e.clientY-r.top-r.height/2)/(r.height/2),l=Math.hypot(x,y)||1,k=Math.min(1,l)/l;jv.x=x*k;jv.y=y*k;kn.style.transform=`translate(${jv.x*32}px,${jv.y*32}px)`}
+const jend=()=>{jp=null;jv.x=jv.y=0;kn.style.transform=''};
+jk.addEventListener('pointerdown',e=>{jp=e.pointerId;jk.setPointerCapture(jp);jm(e)});jk.addEventListener('pointermove',e=>{if(e.pointerId==jp)jm(e)});jk.addEventListener('pointerup',jend);jk.addEventListener('pointercancel',jend);
+[['mf',1],['mb',-1]].forEach(([i,v])=>{const b=$(i);b.addEventListener('pointerdown',()=>mvb.f=v);['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,()=>mvb.f=0))});
+addEventListener('keydown',e=>{if(e.target.tagName=='INPUT')return;const k=e.key.length==1?e.key.toLowerCase():e.key;keys[k]=1;
+ if(e.ctrlKey&&k=='z'){e.preventDefault();undo()}if(e.ctrlKey&&k=='y'){e.preventDefault();redoF()}if(k=='Delete'&&sel){const id=sel;sel=null;hl();showSel();put('items/'+id,null)}if(k=='Escape'){sel=null;hl();showSel()}});
+addEventListener('keyup',e=>{keys[e.key.length==1?e.key.toLowerCase():e.key]=0});
+const RC=new THREE.Raycaster(),PL=new THREE.Plane(new V3(0,1,0),0),m2=new THREE.Vector2();
+function nd(e){m2.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);RC.setFromCamera(m2,CAM)}
+function pick(e){nd(e);for(const h of RC.intersectObjects(root.children,true))for(let o=h.object;o;o=o.parent){const u=o.userData;if(u.iid)return{iid:u.iid};if(u.wid)return{wid:u.wid,f:h.face&&h.face.materialIndex==5?'b':'a'};if(u.zone)return{zone:u.zone}}return null}
+const tl=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new V3,new V3]),new THREE.LineBasicMaterial({color:0xff2a5f,depthTest:false}));tl.renderOrder=10;tl.visible=false;S.add(tl);
+function tapeClick(e){nd(e);const hs=RC.intersectObjects(root.children,true),p=hs.length?hs[0].point:RC.ray.intersectPlane(PL,new V3());if(!p)return;if(tp.length>=2){tp=[];tl.visible=false}tp.push(p.clone());
+ if(tp.length==2){const d=tp[0].distanceTo(tp[1]);tl.geometry.setFromPoints(tp);tl.visible=true;toast(`📏 ${Math.floor(d)} م و ${Math.round((d-Math.floor(d))*100)} سم`)}else toast('اختار النقطة التانية')}
+const cv=$('c'),PT=new Map();let drag=null,mvd=0,t0=0,pd=0,pm=null;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);PT.set(e.pointerId,{x:e.clientX,y:e.clientY});mvd=0;t0=Date.now();
+ if(PT.size==1&&mode=='orbit'&&!tape){const h=pick(e);if(h&&h.iid){selItem(h.iid);const it=D.items[h.iid];nd(e);const p=RC.ray.intersectPlane(PL,new V3());drag={id:h.iid,dx:it.x-(p?p.x:0),dz:it.z-(p?p.z:0),x:it.x,z:it.z}}}
+ if(PT.size==2){const [a,b]=[...PT.values()];pd=Math.hypot(a.x-b.x,a.y-b.y);pm={x:(a.x+b.x)/2,y:(a.y+b.y)/2};drag=null}});
+cv.addEventListener('pointermove',e=>{const p=PT.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;mvd+=Math.abs(dx)+Math.abs(dy);
+ const pan=(a,b)=>{const k=cam.r*.0016,c=Math.cos(cam.az),s=Math.sin(cam.az);cam.tx-=c*a*k+s*b*k;cam.tz+=s*a*k-c*b*k};
+ if(PT.size==2){const [a,b]=[...PT.values()],d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2};if(mode=='orbit'){cam.r=Math.min(60,Math.max(3,cam.r*pd/d));pan(m.x-pm.x,m.y-pm.y)}pd=d;pm=m;return}
+ if(drag){nd(e);const q=RC.ray.intersectPlane(PL,new V3());if(q){drag.x=sn(q.x+drag.dx);drag.z=sn(q.z+drag.dz);const g=IM[drag.id];if(g){g.position.x=drag.x;g.position.z=drag.z;if(bh)bh.update()}}return}
+ if(mode=='orbit'){if(e.shiftKey||e.buttons&2)pan(dx,dy);else{cam.az-=dx*.006;cam.pol=Math.min(1.45,Math.max(.15,cam.pol-dy*.005))}}
+ else if(mode=='walk'){yaw-=dx*.005;pit=Math.max(-1.3,Math.min(1.3,pit-dy*.004))}});
+cv.addEventListener('pointerup',e=>{PT.delete(e.pointerId);
+ if(drag){const d=drag,it=D.items[d.id];drag=null;if(it&&(d.x!==it.x||d.z!==it.z))put('items/'+d.id,Object.assign({},it,{x:d.x,z:d.z}));return}
+ if(mvd<8&&Date.now()-t0<400&&PT.size==0){if(tape){tapeClick(e);return}const h=pick(e);if(h&&h.iid)selItem(h.iid);else if(h&&h.wid)wmenu(h.wid,h.f);else if(h&&h.zone)fmenu(h.zone);else{sel=null;hl();showSel();$('wm').style.display='none'}}});
+cv.addEventListener('pointercancel',e=>{PT.delete(e.pointerId);drag=null});
+cv.addEventListener('wheel',e=>{if(mode=='orbit')cam.r=Math.min(60,Math.max(3,cam.r*(1+e.deltaY*.001)))});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ===== الشريك (التواجد اللحظي) ===== */
+const av=new THREE.Group();{const b=new THREE.Mesh(new THREE.CylinderGeometry(.18,.22,1.2,12),mat('#ff2a5f'));b.position.y=.6;const h=new THREE.Mesh(new THREE.SphereGeometry(.2,12,10),mat('#ffd9c0'));h.position.y=1.4;av.add(b,h);av.visible=false;S.add(av)}
+function presOn(){if(!db)return;const mine=db.ref(ROOT+'presence/'+K(ME));mine.onDisconnect().remove();let last='';
+ setInterval(()=>{const o={x:+(mode=='orbit'?cam.tx:wx).toFixed(2),z:+(mode=='orbit'?cam.tz:wz).toFixed(2),m:mode},k=JSON.stringify(o);if(k!=last){last=k;mine.set(o)}},500);
+ db.ref(ROOT+'presence/'+K(YOU)).on('value',s=>{const v=s.val();av.visible=!!v;if(v){av.userData.tx=v.x;av.userData.tz=v.z;if(!av.userData.l){av.userData.l=1;const l=label(YOU,0,0);l.position.set(0,2.1,0);l.scale.set(1.2,.3,1);av.add(l);av.position.set(v.x,0,v.z)}}})}
+
+/* ===== الشات (محفوظ للأبد في Firebase) + ريأكت + رد بالسحب ===== */
+let rep=null,CMAP={};
+function chatOn(){if(!db)return;db.ref(ROOT+'chat').limitToLast(500).on('value',s=>{const el=$('msgs'),low=el.scrollHeight-el.scrollTop-el.clientHeight<70||!el.dataset.i;let h='';
+ s.forEach(c=>{const m=c.val(),me=m.u===ME;CMAP[c.key]=m;h+=`<div class="m ${me?'me':'you'}" data-k="${c.key}"${me?'':` data-a="rx" data-v="${c.key}"`}>${m.rp?`<div class="rq"><b>${esc(m.rp.u)}</b>${esc(m.rp.t)}</div>`:''}${me?'':`<small>${esc(m.u)}</small>`}${esc(m.t)}<span class="ri" data-a="rep" data-v="${c.key}">↩</span>${m.r?`<span class="rx">${m.r}</span>`:''}</div>`});
+ el.innerHTML=h;if(low){el.scrollTop=el.scrollHeight;el.dataset.i=1}})}
+function setRep(k){const m=CMAP[k];if(!m)return;rep={u:m.u,t:String(m.t).slice(0,120)};$('rbar').innerHTML=`<span><b>${esc(m.u)}</b>: ${esc(rep.t)}</span><button id="rx0">✕</button>`;$('rbar').style.display='flex';$('inp').focus();$('rx0').onclick=noRep}
+function noRep(){rep=null;$('rbar').style.display='none'}
+function send(){const i=$('inp'),t=i.value.trim();if(!t||!db)return;i.value='';const o={u:ME,t,ts:firebase.database.ServerValue.TIMESTAMP};if(rep)o.rp=rep;db.ref(ROOT+'chat').push(o);noRep()}
+$('snd').onclick=send;$('inp').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+$('msgs').addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t||!db)return;const k=t.dataset.v;if(t.dataset.a=='rep')setRep(k);else db.ref(ROOT+'chat/'+k+'/r').transaction(r=>({'':'❤️','❤️':'🥺','🥺':'😂','😂':''}[r||'']))});
+{const a=$('msgs');let x0,y0,el=null,dx=0,sw=false;
+ a.addEventListener('touchstart',e=>{el=e.target.closest('[data-k]');if(!el)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;sw=false},{passive:true});
+ a.addEventListener('touchmove',e=>{if(!el)return;const x=e.touches[0].clientX-x0,y=e.touches[0].clientY-y0;if(!sw&&Math.abs(x)>10&&Math.abs(x)>Math.abs(y)*1.5)sw=true;if(sw){dx=Math.max(-90,Math.min(90,x));el.style.transform=`translateX(${dx}px)`}},{passive:true});
+ a.addEventListener('touchend',()=>{if(!el)return;const t=el;el=null;if(sw&&Math.abs(dx)>60)setRep(t.dataset.k);t.style.transition='transform .2s';t.style.transform='';setTimeout(()=>t.style.transition='',220);sw=false});
+ a.addEventListener('touchcancel',()=>{if(el){el.style.transform='';el=null;sw=false}})}
+
+/* ===== التشغيل ===== */
+function start(){
+ if(typeof firebase!=='undefined'){
+  try{if(!firebase.apps.length)firebase.initializeApp(FB);db=firebase.database()}catch(e){}
+ }
+ listen();chatOn();presOn();
+ if(db){db.ref(ROOT+'photos').on('child_added',s=>photo(s.key,s.val()));db.ref(ROOT+'photos').on('child_changed',s=>photo(s.key,s.val()))}
+}
+function boot(){if(!ME){$('who').style.display='flex';$('who').onclick=e=>{const w=e.target.dataset.w;if(!w)return;ME=w;YOU=w=='مصطفى'?'فريال':'مصطفى';$('who').style.display='none';start()}}else{YOU=YOU||(ME=='مصطفى'?'فريال':'مصطفى');start()}}
+loadLocal();apply();let last=performance.now();
+(function loop(t){requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;if(mode=='orbit')oc();else walkStep(dt);
+ if(av.visible){av.position.x+=(av.userData.tx-av.position.x)*.15;av.position.z+=(av.userData.tz-av.position.z)*.15}RN.render(S,CAM)})(last);
+try{if(REQUIRE_GMAIL_AUTH&&typeof firebase!=='undefined'){if(!firebase.apps.length)firebase.initializeApp(FB);firebase.auth().onAuthStateChanged(u=>{if(u&&ALLOWED_EMAILS.includes((u.email||'').toLowerCase())){$('gate').style.display='none';boot()}else{$('gate').style.display='flex';if(u){$('gmsg').textContent='⛔ '+u.email+' غير مصرح له';firebase.auth().signOut()}}});
+ $('glogin').onclick=()=>firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>$('gmsg').textContent=e.message)}else boot()}catch(e){boot()}
+</script>
+</body>
+</html>
