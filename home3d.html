@@ -145,7 +145,7 @@ const RN=new THREE.WebGLRenderer({canvas:$('c'),antialias:true,powerPreference:'
 RN.setPixelRatio(Math.min(devicePixelRatio,isMob?1.5:2));
 RN.shadowMap.enabled=true;
 RN.shadowMap.type=THREE.PCFShadowMap;
-RN.shadowMap.autoUpdate=false; // سر السرعة الفائقة: لا يعيد رسم الظلال إلا عند تعديل عنصر
+RN.shadowMap.autoUpdate=false;
 RN.outputEncoding=THREE.sRGBEncoding;
 RN.toneMapping=THREE.ACESFilmicToneMapping;
 RN.toneMappingExposure=1.08;
@@ -294,7 +294,6 @@ function tex(t){
 const tx=(t,a,b)=>{const T=tex(t).clone();T.needsUpdate=true;T.repeat.set(a,b);return T};
 
 /* ===== المخطط الهندسي الدقيق + زوايا الدخول السينمائي لكل غرفة ===== */
-// [id, name, x1, z1, x2, z2, defaultYaw]
 const Z=[
  ['salon','الصالة',.3,3.45,5.67,7.88,0],
  ['corr','طرقة التوزيع',5.67,3.45,10.45,4.58,-Math.PI/2],
@@ -674,7 +673,20 @@ function put(path,val){const p=path.split('/');let o=D;for(let i=0;i<p.length-1;
  saveLocal();if(ref)ref.child(path).set(val);hist.push(JSON.stringify(D));if(hist.length>31)hist.shift();redo=[];apply()}
 function listen(){if(ref)ref.off();hist=[];redo=[];loadLocal();if(!hist.length)hist.push(JSON.stringify(D));apply();
  if(!db)return;ref=db.ref(ROOT+'designs/'+slot);
- ref.on('value',s=>{const v=s.val();if(v){D={items:v.items||{},walls:v.walls||{},floors:v.floors||{},ceilings:v.ceilings||{},palette:v.palette||[]};saveLocal()}if(!hist.length)hist.push(JSON.stringify(D));apply()})}
+ let firstSync=true;
+ ref.on('value',s=>{
+  const v=s.val();
+  if(v){
+   D={items:v.items||{},walls:v.walls||{},floors:v.floors||{},ceilings:v.ceilings||{},palette:v.palette||[]};
+   saveLocal();
+  }else if(!firstSync){
+   D={items:{},walls:{},floors:{},ceilings:{},palette:[]};
+   saveLocal();
+  }
+  firstSync=false;
+  if(!hist.length)hist.push(JSON.stringify(D));
+  apply();
+ })}
 function undo(){if(hist.length<2)return;redo.push(hist.pop());D=JSON.parse(hist[hist.length-1]);saveLocal();if(ref)ref.set(D);apply()}
 function redoF(){if(!redo.length)return;const s=redo.pop();hist.push(s);D=JSON.parse(s);saveLocal();if(ref)ref.set(D);apply()}
 function hl(){if(bh){S.remove(bh);bh=null}if(sel&&IM[sel]){bh=new THREE.BoxHelper(IM[sel],0xffd166);S.add(bh)}}
@@ -692,7 +704,6 @@ function enterRoom3D(zid){
  activeRoom=zid;
  $('wm').style.display='none';
  const cx=(z[2]+z[4])/2,cz=(z[3]+z[5])/2,tyaw=z[6]||0;
- // وضع الكاميرا في ثلث الغرفة الخلفي لتكشف الغرفة بالكامل أمامك
  const backDist=Math.min(z[4]-z[2],z[5]-z[3])*.28;
  const tx=cx+Math.sin(tyaw)*backDist,tz=cz+Math.cos(tyaw)*backDist;
  const startPos=CAM.position.clone();
@@ -781,7 +792,7 @@ $('cat').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.datase
 
 /* ===== قائمة الحوائط والشبابيك والستائر + قائمة تشطيب الغرفة ===== */
 function wmenu(id,f){
- wsel={id,f};const w=WALLS.find(x=>x[0]==id),st=D.walls[id]||{},op=w[7],curO=st.o||(op?op[0]:'n'),curCol=(st[f]||'#F5EFE6').toUpperCase(),curWt=st.wt||'alum_w',curCt=st.ct||'none',p=$('wm');
+ wsel={id,f};const w=WALLS.find(x=>x[0]==id),st=D.walls[id]||{},op=w[7],curO=st.o||(op?op[0]:'n'),curCol=(st[f]||'#F5EFE6').toUpperCase(),curTex=st[f+'m']||'',curWt=st.wt||'alum_w',curCt=st.ct||'none',p=$('wm');
  p.style.display='block';$('sel').style.display='none';sel=null;hl();
  const OB=[['x','🔨 هدم'],['d','🚪 باب'],['a','⛩ آرش'],['s','🍽 شباك مناولة'],['w','🪟 شباك'],['g','باب بلكونة زجاج'],['n','🧱 صلب'],['r','↺ الأصل']];
  const savedPal=(D.palette||[]).map(c=>`<button class="sw-btn" data-c="${c}" title="${c}" style="background:${c}"></button>`).join('');
@@ -793,11 +804,11 @@ function wmenu(id,f){
  +(isWin?`<div class="sec-div">🪟 تأسيس الشباك والستارة المدمجة:</div>`
   +`<div style="margin:3px 0">نوع الشباك: `+WIN_STYLES.map(ws=>`<button data-wt="${ws[0]}" class="${curWt===ws[0]?'on':''}">${ws[1]}</button>`).join('')+`</div>`
   +`<div style="margin:3px 0">الستارة: `+CURT_STYLES.map(cs=>`<button data-ct="${cs[0]}" class="${curCt===cs[0]?'on':''}">${cs[1]}</button>`).join('')+`</div>`:'')
- +`<div class="sec-div">🎨 دهان وتجليد الحائط:</div>`
- +PAINT_PRESETS.map(c=>`<button class="sw-btn" data-c="${c[0]}" title="${c[1]} (${c[0]})" style="background:${c[0]}"></button>`).join('')
+ +`<div class="sec-div">🎨 دهان وتجليد الحائط: <button data-resetface="1" style="font-size:11px;padding:2px 8px">↺ أصل اللون والتجليد</button></div>`
+ +PAINT_PRESETS.map(c=>`<button class="sw-btn" data-c="${c[0]}" title="${c[1]} (${c[0]})" style="background:${c[0]};${!curTex&&curCol===c[0]?'border-color:#ffd166;transform:scale(1.1)':''}"></button>`).join('')
  +` <input type="color" data-cc value="${curCol}" title="اختر أي درجة لون">`
  +(savedPal?`<div style="margin-top:4px;font-size:11px;color:#ffd166">⭐ باليتة ألوان شقتنا: ${savedPal}</div>`:'')
- +'<div style="margin-top:4px">تجليد: '+[['marble','بديل رخام أبيض'],['marble_emp','بديل رخام إمبرادور'],['wood','بديل خشب دافئ'],['wood_dark','شيبورد خشب غامق'],['brick','طوب حراري'],['tile','سيراميك']].map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join('')+'</div>';
+ +'<div style="margin-top:4px">تجليد: '+[['marble','بديل رخام أبيض'],['marble_emp','بديل رخام إمبرادور'],['wood','بديل خشب دافئ'],['wood_dark','شيبورد خشب غامق'],['brick','طوب حراري'],['tile','سيراميك']].map(t=>`<button data-t="${t[0]}" class="${curTex===t[0]?'on':''}">${t[1]}</button>`).join('')+'</div>';
 }
 
 function fmenu(z){
@@ -834,12 +845,26 @@ $('wm').addEventListener('click',e=>{
  }
  if(!wsel)return;const id=wsel.id,s=Object.assign({},D.walls[id]);
  if(d.f)wmenu(id,d.f);
- else if(d.o){if(d.o=='r'){delete s.o;delete s.sw;delete s.hg}else s.o=d.o;put('walls/'+id,s);wmenu(id,wsel.f)}
+ else if(d.resetface){
+  delete s[wsel.f];delete s[wsel.f+'m'];
+  put('walls/'+id,Object.keys(s).length?s:null);
+  wmenu(id,wsel.f);toast('رجع لون الوجه لأصله ✅');
+ }
+ else if(d.o){
+  if(d.o=='r'){
+   // استعادة أصل الحائط بالكامل (الفتحة + اللون + التجليد + الستارة)
+   put('walls/'+id,null);
+   wmenu(id,wsel.f);
+   toast('رجع الحائط لأصله بالكامل ✅');
+  }else{
+   s.o=d.o;put('walls/'+id,s);wmenu(id,wsel.f);
+  }
+ }
  else if(d.wt){s.wt=d.wt;put('walls/'+id,s);wmenu(id,wsel.f)}
  else if(d.ct){s.ct=d.ct;put('walls/'+id,s);wmenu(id,wsel.f)}
  else if(d.sw){s.sw=s.sw?0:1;put('walls/'+id,s)}else if(d.hg){s.hg=s.hg?0:1;put('walls/'+id,s)}
  else if(d.c){s[wsel.f]=d.c.toUpperCase();s[wsel.f+'m']='';put('walls/'+id,s);wmenu(id,wsel.f)}
- else if(d.t){s[wsel.f+'m']=d.t;put('walls/'+id,s)}
+ else if(d.t){s[wsel.f+'m']=d.t;put('walls/'+id,s);wmenu(id,wsel.f)}
 });
 $('wm').addEventListener('input',e=>{
  if(e.target.dataset.cc!==undefined&&wsel){
@@ -936,7 +961,6 @@ const RC=new THREE.Raycaster(),PL=new THREE.Plane(new V3(0,1,0),0),m2=new THREE.
 function nd(e){m2.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);RC.setFromCamera(m2,CAM)}
 function pick(e){
  nd(e);
- // فحص الضغط على لافتة اسم الغرفة للدخول السريع بـ 3D
  if(LB.visible){
   const lHits=RC.intersectObjects(LB.children,false);
   for(const h of lHits)if(h.object.userData.zid)return{zid:h.object.userData.zid};
@@ -1009,7 +1033,7 @@ const tmpLook=new V3();
  const dt=Math.min(.05,(t-last)/1000);last=t;
  if(flyAnim){
   const u=Math.min(1,(t-flyAnim.t0)/flyAnim.dur);
-  const ease=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2; // حركة سينمائية ناعمة
+  const ease=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
   CAM.position.lerpVectors(flyAnim.sPos,flyAnim.ePos,ease);
   tmpLook.lerpVectors(flyAnim.sLook,flyAnim.eLook,ease);
   CAM.lookAt(tmpLook);
