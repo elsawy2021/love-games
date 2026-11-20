@@ -425,8 +425,8 @@ function dTele(t){const L=telepathyBank,q=L[(t.q||0)%L.length],c=t.c||{},my=c[MK
 function dWho(w){const L=whoFirstBank,v=w.v||{},my=v[MK],yo=v[YK],ok=my&&yo;
  stage(bar('😂 مين فينا اللي...؟',wait(ok,yo,my,'صوّت'))
  +`<div class="q">${esc(L[(w.q||0)%L.length])}</div><div class="opts">`
- +[ME,YOU].map((n,i)=>`<button class="opt ${my===n?'sel':''}" data-a="wv" data-v="${i}">${i?'💑':'🙋'} ${esc(n)}</button>`).join('')+`</div>`
- +(ok?`<div class="rev"><b>${my===yo?`😂 إجماع على (${esc(my)})! ♥️`:'😄 كل واحد شاور على التاني!'}</b><br>تصويتك: ${esc(my)} | تصويت ${esc(YOU)}: ${esc(yo)}</div>`:'')
++[ME,YOU].map((n,i)=>`<button class="opt ${my===n?'sel':''}" data-a="wv" data-v="${n}">${i?'💑':'🙋'} ${esc(n)}</button>`).join('')+`</div>`
++(ok?`<div class="rev"><b>${my===yo?`😂 إجماع على (${esc(my)})! ♥️`:'😄 كل واحد شاور على التاني!'}</b><br>تصويتك: ${esc(my)} | تصويت ${esc(YOU)}: ${esc(yo)}</div>`:'')
  +`<button class="go" data-a="wn">الموقف اللي بعده 🔄😂</button>`)}
 
 function dWheel(w){const r=w.r||{},my=r[MK],yo=r[YK],win=w.win?(w.win===MK?ME:YOU):'';let from=rot,anim=false;
@@ -454,8 +454,8 @@ const act={
  mode(m){mode=m;draw()},
  tp(i){const o=telepathyBank[((G.telepathy||{}).q||0)%telepathyBank.length].opts[i];R('telepathy').transaction(t=>{t=t||{};t.c=t.c||{};if(Object.keys(t.c).length>=2)return t;t.c[MK]=o;const v=Object.values(t.c);if(v.length==2){t.t=(t.t||0)+1;if(v[0]===v[1])t.m=(t.m||0)+1}return t})},
  tn(){R('telepathy').transaction(t=>{t=t||{};return Object.assign(nxt(telepathyBank.length,t.u,t.q),{m:t.m||0,t:t.t||0})})},
- wv(i){const n=i?YOU:ME;R('whofirst').transaction(w=>{w=w||{};w.v=w.v||{};if(Object.keys(w.v).length<2)w.v[MK]=n;return w})},
- wn(){R('whofirst').transaction(w=>nxt(whoFirstBank.length,(w||{}).u,(w||{}).q))},
+wv(n){R('whofirst').transaction(w=>{w=w||{};w.v=w.v||{};if(Object.keys(w.v).length<2)w.v[MK]=n;return w})},
+wn(){R('whofirst').transaction(w=>nxt(whoFirstBank.length,(w||{}).u,(w||{}).q))},
  rp(m){R('wheel').transaction(w=>{w=w||{};if(w.win)return w;w.r=w.r||{};
   // قفل الاختيار بمجرد الضغط لمنع الغش وتغيير الحركة
   if(w.r[MK])return w;
