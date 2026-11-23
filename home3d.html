@@ -10,39 +10,43 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#1a0a10;font:600 13px 'Cairo',system-ui,sans-serif;color:#fff;user-select:none}
 #c{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
 button,select,input{font:inherit}
-button,select{color:#fff;background:rgba(42,8,24,.86);border:1px solid rgba(255,150,175,.45);border-radius:12px;padding:4px 9px;cursor:pointer;margin:1.5px;transition:.18s;box-shadow:0 2px 8px rgba(0,0,0,.3);white-space:nowrap;flex-shrink:0}
+button,select{color:#fff;background:rgba(42,8,24,.88);border:1px solid rgba(255,150,175,.45);border-radius:12px;padding:4px 9px;cursor:pointer;margin:1.5px;transition:.18s;box-shadow:0 2px 8px rgba(0,0,0,.3);white-space:nowrap;flex-shrink:0}
 button:hover{border-color:#ffd166}
 button.on{background:linear-gradient(135deg,#ff2a5f,#c9184a);border-color:#ffd166;box-shadow:0 0 10px rgba(255,42,95,.5)}
 
 #topHud{position:fixed;top:calc(4px + env(safe-area-inset-top));right:6px;left:6px;z-index:5;display:flex;flex-direction:column;gap:4px;pointer-events:none}
 .bar-row{display:flex;align-items:center;gap:4px;width:100%;pointer-events:none}
 .bar-row>*{pointer-events:auto}
-#tools{display:flex;align-items:center;gap:3px;overflow-x:auto;max-width:calc(100vw - 54px);padding:2px 4px;background:rgba(24,4,14,.72);backdrop-filter:blur(8px);border:1px solid rgba(255,140,165,.35);border-radius:16px;scrollbar-width:none;-ms-overflow-style:none}
+#tools{display:flex;align-items:center;gap:3px;overflow-x:auto;max-width:calc(100vw - 54px);padding:2px 4px;background:rgba(24,4,14,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,140,165,.35);border-radius:16px;scrollbar-width:none;-ms-overflow-style:none}
 #tools::-webkit-scrollbar{display:none}
-#warmBanner{align-self:center;background:linear-gradient(90deg,rgba(65,6,30,.82),rgba(125,14,52,.86),rgba(65,6,30,.82));border:1px solid rgba(255,209,102,.5);padding:3px 14px;border-radius:24px;font-family:'Aref Ruqaa',serif;font-size:14.5px;color:#ffe0e9;box-shadow:0 4px 14px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis;transition:opacity .45s}
+#warmBanner{align-self:center;background:linear-gradient(90deg,rgba(65,6,30,.84),rgba(125,14,52,.88),rgba(65,6,30,.84));border:1px solid rgba(255,209,102,.5);padding:3px 14px;border-radius:24px;font-family:'Aref Ruqaa',serif;font-size:14.5px;color:#ffe0e9;box-shadow:0 4px 14px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis;transition:opacity .45s}
 #topHud.hid #tools,#topHud.hid #warmBanner{display:none}
 
+#roomNav{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:4px;max-width:96vw;overflow-x:auto;padding:4px 8px;background:rgba(28,5,16,.88);backdrop-filter:blur(10px);border:1.5px solid rgba(255,209,102,.55);border-radius:22px;box-shadow:0 8px 25px rgba(0,0,0,.55);scrollbar-width:none}
+#roomNav::-webkit-scrollbar{display:none}
+#exitRoomBtn{background:linear-gradient(135deg,#ffd166,#f4a261);color:#2b0514;font-weight:800;border-color:#fff;display:none}
+
 .pn{position:fixed;z-index:6;background:rgba(30,5,18,.95);backdrop-filter:blur(12px);border:1.5px solid rgba(255,140,165,.5);border-radius:18px;padding:10px;display:none;max-height:48vh;overflow:auto;box-shadow:0 12px 35px rgba(0,0,0,.7)}
-#cat{bottom:6px;right:6px;left:6px}#sel{top:86px;right:6px;width:240px;max-height:62vh}#wm{bottom:6px;right:6px;left:6px;text-align:center}
+#cat{bottom:58px;right:6px;left:6px}#sel{top:86px;right:6px;width:240px;max-height:62vh}#wm{bottom:58px;right:6px;left:6px;text-align:center}
 #nb{top:82px;right:6px;left:6px;max-height:74vh}#nb td,#nb th{padding:4px 7px;border-bottom:1px solid rgba(255,255,255,.1);text-align:right;font-size:12px}
 .gr{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}label{display:block;margin:3px 0;font-size:11.5px}label input[type=range]{width:100%;accent-color:#ff2a5f}
 .code-box{display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.45);border:1px solid #ffd166;padding:2px 9px;border-radius:12px;margin:3px 2px;font-size:11.5px;flex-wrap:wrap;justify-content:center}
 .sw-btn{width:30px;height:25px;border-radius:8px;vertical-align:middle;border:2px solid rgba(255,255,255,.65)}
 .sec-div{margin:7px 0 3px;padding-top:5px;border-top:1px dashed rgba(255,209,102,.35);color:#ffd166;font-size:12px;font-weight:700}
 
-#chat{left:6px;bottom:6px;width:min(330px,calc(100% - 12px));height:46vh;flex-direction:column;padding:8px}
+#chat{left:6px;bottom:58px;width:min(330px,calc(100% - 12px));height:45vh;flex-direction:column;padding:8px}
 #msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:5px}
 .m{position:relative;max-width:85%;padding:6px 11px;border-radius:14px;line-height:1.45;word-break:break-word;font-size:12.5px}.m small{display:block;font-size:10px;opacity:.7}
 .me{align-self:flex-start;background:linear-gradient(135deg,#ff2a5f,#c9184a)}.you{align-self:flex-end;background:#3a0f22;border:1px solid rgba(255,117,143,.4)}
 .rx{position:absolute;bottom:-10px;left:-4px;background:#1e0410;border:1px solid #ff2a5f;border-radius:50%;padding:0 5px}
 .rq{border-right:3px solid #ffd166;background:rgba(0,0,0,.25);border-radius:8px;padding:3px 7px;margin-bottom:4px;font-size:11px;max-height:3.4em;overflow:hidden}.rq b{display:block;color:#ffd166}
 .ri{cursor:pointer;opacity:.7;margin-inline-start:6px}
-#rbar{display:none;align-items:center;gap:6px;padding:4px 8px;font-size:11.5px;border-right:3px solid #ff2a5f;background:#240a14}#rbar span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#replyBar{display:none;align-items:center;gap:6px;padding:4px 8px;font-size:11.5px;border-right:3px solid #ff2a5f;background:#240a14}#replyBar span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .cin{display:flex;gap:4px}.cin input{flex:1;min-width:0;border-radius:18px;border:1px solid #ff2a5f;padding:6px 11px;background:#fff;color:#000}
-#joy{position:fixed;left:16px;bottom:20px;width:104px;height:104px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.35);display:none;z-index:4;touch-action:none}
-#knob{position:absolute;left:32px;top:32px;width:40px;height:40px;border-radius:50%;background:#ff2a5f;pointer-events:none}
-#mv{position:fixed;left:16px;bottom:20px;display:none;z-index:4;flex-direction:column}#mv button{width:56px;height:52px;font-size:20px}
-#toast,#err{position:fixed;left:50%;transform:translateX(-50%);bottom:64px;background:rgba(48,8,24,.95);border:1px solid #ffd166;padding:7px 16px;border-radius:22px;z-index:9;display:none;box-shadow:0 6px 20px rgba(0,0,0,.5);font-size:12.5px;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}#err{background:#9d0208;bottom:10px}
+#joy{position:fixed;left:16px;bottom:64px;width:98px;height:98px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.35);display:none;z-index:4;touch-action:none}
+#knob{position:absolute;left:29px;top:29px;width:40px;height:40px;border-radius:50%;background:#ff2a5f;pointer-events:none}
+#mv{position:fixed;left:16px;bottom:64px;display:none;z-index:4;flex-direction:column}#mv button{width:54px;height:48px;font-size:20px}
+#toast,#err{position:fixed;left:50%;transform:translateX(-50%);bottom:115px;background:rgba(48,8,24,.95);border:1px solid #ffd166;padding:7px 16px;border-radius:22px;z-index:9;display:none;box-shadow:0 6px 20px rgba(0,0,0,.5);font-size:12.5px;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}#err{background:#9d0208;bottom:10px}
 .ov{position:fixed;inset:0;background:radial-gradient(circle at 50% 0,#4a0823,#140209);z-index:20;display:none;align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:12px;font-size:18px;padding:20px}
 @media (max-width:600px){
  button,select{padding:4px 8px;font-size:12px}
@@ -74,11 +78,27 @@ button.on{background:linear-gradient(135deg,#ff2a5f,#c9184a);border-color:#ffd16
    <button id="hm">🏠 للبيت</button>
   </div>
  </div>
- <div id="warmBanner">🏡 عش حبنا.. كل تفصيلة هنا بنرسمها سوا عشان بكرة نعيشها حقيقة ♥️</div>
+ <div id="warmBanner">🏡 اضغط على اسم أي غرفة عشان تدخل جواها بحركة 3D وتلف فيها ♥️</div>
+</div>
+
+<div id="roomNav">
+ <button id="exitRoomBtn">📤 اخرج للشقة كاملة</button>
+ <button data-rz="salon">🛋️ الصالة</button>
+ <button data-rz="bal">🌸 البلكونة</button>
+ <button data-rz="kit">🍳 المطبخ</button>
+ <button data-rz="r1">🛏️ غرفة 1</button>
+ <button data-rz="r2">🧸 غرفة 2</button>
+ <button data-rz="r3">👑 الماستر</button>
+ <button data-rz="bath">🛁 الحمام</button>
+ <button data-rz="corr">🚪 الطرقة</button>
 </div>
 
 <div class="pn" id="cat"></div><div class="pn" id="sel"></div><div class="pn" id="wm"></div><div class="pn" id="nb"></div>
-<div class="pn" id="chat"><div id="msgs"></div><div id="rbar"></div><div class="cin"><input id="inp" placeholder="اكتب رسالة لشريك حياتك… 💌" autocomplete="off"><button id="snd">إرسال</button></div></div>
+<div class="pn" id="chat">
+ <div id="msgs"></div>
+ <div id="replyBar"></div>
+ <div class="cin"><input id="inp" placeholder="اكتب رسالة لشريك حياتك… 💌" autocomplete="off"><button id="snd">إرسال</button></div>
+</div>
 <div id="joy"><div id="knob"></div></div>
 <div id="mv"><button id="mf">⬆</button><button id="mb">⬇</button></div>
 <div id="toast"></div><div id="err"></div>
@@ -100,12 +120,12 @@ const FB={apiKey:"AIzaSyCmwupjdLgNzLFyOxNuTTRFgp0yVoyK-YI",authDomain:"love-game
 const REQUIRE_GMAIL_AUTH=false,ALLOWED_EMAILS=['moustafaelsawy7@gmail.com','feryal.yasser.edu@gmail.com'];
 const ROOT='rooms/house_3d/',Q=new URLSearchParams(location.search),$=i=>document.getElementById(i),V3=THREE.Vector3;
 const K=n=>String(n).replace(/[.#$\[\]\/]/g,'_'),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const sn=v=>Math.round(v*20)/20,toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3500)};
+const sn=v=>Math.round(v*20)/20,toast=t=>{const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3200)};
 window.onerror=m=>{const e=$('err');e.textContent='⚠️ '+m;e.style.display='block'};
-let ME=Q.get('user'),YOU=Q.get('partner'),db=null,ref=null,D={items:{},walls:{},floors:{},ceilings:{},palette:[]},slot=1,hist=[],redo=[],sel=null,mode='orbit',ambMode=0,ceilMode=0,tape=0,tp=[],PH={},IM={},WG={},WJ={},FL={},FJ={},CL={},CJ={},G,bh=null,wsel=null,tab='app';
+let ME=Q.get('user'),YOU=Q.get('partner'),db=null,ref=null,D={items:{},walls:{},floors:{},ceilings:{},palette:[]},slot=1,hist=[],redo=[],sel=null,mode='orbit',ambMode=0,ceilMode=0,tape=0,tp=[],PH={},IM={},WG={},WJ={},FL={},FJ={},CL={},CJ={},G,bh=null,wsel=null,tab='app',activeRoom=null;
 
 const WARM_QUOTES=[
- "🏡 عش حبنا.. كل تفصيلة هنا بنرسمها سوا عشان بكرة نعيشها حقيقة ♥️",
+ "🏡 اضغط على اسم أي غرفة عشان تدخل جواها بحركة 3D وتلف فيها ♥️",
  "✨ ركن بركن وحيطة بحيطة.. بنبني جنتنا الدافية بإيدينا يا روحي 🫂",
  "☕ تخيل أول فنجان قهوة نشربه سوا في البلكونة دي وإحنا في بيتنا 🌸",
  "💍 مسير الأحلام اللي بنفرشها هنا تبقى واقع نصحى وننام عليه كل يوم ♥️",
@@ -129,15 +149,12 @@ RN.toneMapping=THREE.ACESFilmicToneMapping;
 RN.toneMappingExposure=1.08;
 function reqShadow(){RN.shadowMap.needsUpdate=true}
 
-// تم توسيع زاوية الكاميرا (FOV) إلى 68 لتعطي رؤية واسعة وواضحة جداً (Wide View)
 const S=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(68,1,.05,300),root=new THREE.Group(),CLG=new THREE.Group(),LB=new THREE.Group();
 S.background=new THREE.Color(0xd7eaf8);
 S.add(root,CLG,LB);
 
-// بيئة الساحة الخارجية (الحديقة والنهر والأجواء الرومانسية)
 const extGroup=new THREE.Group();S.add(extGroup);
 const groundGeo=new THREE.PlaneGeometry(300,300,32,32);
-// تحويل الأرضية لمنحنيات ناعمة وتلال صغيرة
 const pos=groundGeo.attributes.position;
 for(let i=0;i<pos.count;i++){
  const x=pos.getX(i),y=pos.getY(i);
@@ -148,7 +165,6 @@ groundGeo.computeVertexNormals();
 const extGnd=new THREE.Mesh(groundGeo,new THREE.MeshStandardMaterial({color:0x3c5c2d,roughness:.9,metalness:.05}));
 extGnd.rotation.x=-Math.PI/2;extGnd.position.set(7,-.15,4);extGnd.receiveShadow=true;extGroup.add(extGnd);
 
-// نهر متعرج في الحديقة
 const riverGeo=new THREE.PlaneGeometry(80,12,32,1);
 const rPos=riverGeo.attributes.position;
 for(let i=0;i<rPos.count;i++){
@@ -159,7 +175,6 @@ const riverMat=new THREE.MeshStandardMaterial({color:0x4fa6e0,roughness:.1,metal
 const river=new THREE.Mesh(riverGeo,riverMat);
 river.rotation.x=-Math.PI/2;river.position.set(7,-.1,25);river.receiveShadow=true;extGroup.add(river);
 
-// الأشجار
 const tTrunkMat=new THREE.MeshStandardMaterial({color:0x4a2f1d,roughness:.9});
 const tLeafMat=new THREE.MeshStandardMaterial({color:0x2d5a27,roughness:.8});
 const trees=[];
@@ -173,7 +188,6 @@ for(let i=0;i<45;i++){
  trees.push({g:tg,spd:1.5+Math.random()*1.5,amp:.03+Math.random()*.02});
 }
 
-// أثاث الحديقة (مرجيحة ثنائية وكراسي)
 const hTrunkMat=new THREE.MeshStandardMaterial({color:0x8b5a2b,roughness:.8});
 const hSeatMat=new THREE.MeshStandardMaterial({color:0xe6d5b8,roughness:.6});
 const gardenSwing=new THREE.Group();
@@ -188,13 +202,11 @@ gardenSwing.add(pL,pR,pT,gSeat,rL,rR);gardenSwing.traverse(m=>{if(m.isMesh){m.ca
 extGroup.add(gardenSwing);
 const gBench=new THREE.Mesh(new THREE.BoxGeometry(1.6,.4,.6),hTrunkMat);gBench.position.set(8,.2,18);gBench.rotation.y=-Math.PI/6;gBench.castShadow=gBench.receiveShadow=true;extGroup.add(gBench);
 
-// كابينة تبديل الملابس خارج الشقة
 const cabMat=new THREE.MeshStandardMaterial({color:0xf4f0ec,roughness:.8});
 const changeCab=new THREE.Group();changeCab.position.set(-3,0,-8);changeCab.rotation.y=-Math.PI/8;
 const cbB=new THREE.Mesh(new THREE.BoxGeometry(1.5,2.2,1.5),cabMat);cbB.position.y=1.1;cbB.castShadow=cbB.receiveShadow=true;
 const cbD=new THREE.Mesh(new THREE.BoxGeometry(.8,1.9,.05),new THREE.MeshStandardMaterial({color:0x6e4226}));cbD.position.set(0,.95,.75);
 changeCab.add(cbB,cbD);
-// لافتة فوق الكابينة لتغيير الملابس
 const cL=document.createElement('canvas');cL.width=256;cL.height=64;const cg=cL.getContext('2d');
 cg.fillStyle='rgba(74,8,35,.8)';cg.fillRect(0,0,256,64);cg.strokeStyle='#ffd166';cg.lineWidth=3;cg.strokeRect(2,2,252,60);
 cg.fillStyle='#ffe0e9';cg.font='bold 22px Cairo,Tahoma';cg.textAlign='center';cg.fillText('👗 تغيير الملابس 👕',128,40);
@@ -202,7 +214,6 @@ const cSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTextur
 cSpr.scale.set(1.6,.4,1);cSpr.position.set(0,2.5,0);changeCab.add(cSpr);
 extGroup.add(changeCab);
 
-// بيئة HDRI (للانعكاسات الناعمة)
 try{
  const pmrem=new THREE.PMREMGenerator(RN);
  const envScene=new THREE.Scene();
@@ -226,13 +237,11 @@ Object.assign(sun.shadow.camera,{left:-15,right:15,top:15,bottom:-15,far:65});
 sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.0006;
 S.add(hemi,sun,sun.target);
 
-// شقة
 const gndM=new THREE.Mesh(new THREE.PlaneGeometry(16,12),new THREE.MeshStandardMaterial({color:0xc9b9aa,roughness:.88,metalness:.02}));
 gndM.rotation.x=-Math.PI/2;gndM.position.set(7,-.06,4);gndM.receiveShadow=true;root.add(gndM);
 function rs(){RN.setSize(innerWidth,innerHeight,false);CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 const mat=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.55,metalness:.04,envMapIntensity:.8},o));
 
-/* ===== الخامات (12 نوع أرضيات + 6 أسقف) ===== */
 const FLOOR_CATALOG=[
  ['por','بورسلين كلكتا ذهبي ✨'],['por_beige','بورسلين بيج كريمي 🤍'],['por_grey','بورسلين رمادي مودرن 🪨'],
  ['wood','باركيه أرو دافئ 🪵'],['herring','باركيه شيفرون (سبعات) 📐'],['wood_dark','باركيه جوزي غامق 🤎'],
@@ -240,43 +249,18 @@ const FLOOR_CATALOG=[
  ['micro','ميكروسمنت ناعم ☁️'],['tile_hex','سيراميك سداسي مودرن ⬡'],['tile','سيراميك كلاسيك ناعم 💠']
 ];
 const FLOOR_NAMES=Object.fromEntries(FLOOR_CATALOG);
-
 const CEIL_CATALOG=[
- ['cove','جبس بورد بيت نور دافئ (Warm LED) ✨'],
- ['linear','جبس بورد شرائح ماجنتيك (Linear LED) ⚡'],
- ['gold','جبس بورد كلاسيك بإطار ذهبي وصُرّة 👑'],
- ['wood_slats','سقف شرائح خشب مودرن ودافئ 🪵'],
- ['neo','سقف نيوكلاسيك بانوهات فخمة 🏛️'],
- ['flat','سقف فلات سادة ناعم 🤍']
+ ['cove','جبس بورد بيت نور دافئ (Warm LED) ✨'],['linear','جبس بورد شرائح ماجنتيك (Linear LED) ⚡'],
+ ['gold','جبس بورد كلاسيك بإطار ذهبي وصُرّة 👑'],['wood_slats','سقف شرائح خشب مودرن ودافئ 🪵'],
+ ['neo','سقف نيوكلاسيك بانوهات فخمة 🏛️'],['flat','سقف فلات سادة ناعم 🤍']
 ];
 const CEIL_NAMES=Object.fromEntries(CEIL_CATALOG);
-
-const WIN_STYLES=[
- ['alum_w','ألوميتال UPVC أبيض 🪟'],
- ['alum_b','ألوميتال أسود مودرن 🖤'],
- ['alum_g','ألوميتال شامبين ذهبي ✨'],
- ['shish','شباك شيش خشب دافئ 🪵']
-];
-const CURT_STYLES=[
- ['none','بدون ستارة 🚫'],
- ['sheer','شيفون أبيض ناعم 🤍'],
- ['velvet_pink','قطيفة كشمير + شيفون 🌸'],
- ['velvet_beige','قطيفة بيج فخم + شيفون ✨'],
- ['velvet_navy','قطيفة كحلي ملكي + شيفون 💙'],
- ['roller','شتر رول مودرن (Zebra) 📏']
-];
-
+const WIN_STYLES=[['alum_w','ألوميتال UPVC أبيض 🪟'],['alum_b','ألوميتال أسود مودرن 🖤'],['alum_g','ألوميتال شامبين ذهبي ✨'],['shish','شباك شيش خشب دافئ 🪵']];
+const CURT_STYLES=[['none','بدون ستارة 🚫'],['sheer','شيفون أبيض ناعم 🤍'],['velvet_pink','قطيفة كشمير + شيفون 🌸'],['velvet_beige','قطيفة بيج فخم + شيفون ✨'],['velvet_navy','قطيفة كحلي ملكي + شيفون 💙'],['roller','شتر رول مودرن (Zebra) 📏']];
 const PAINT_PRESETS=[
- ['#F5EFE6','أوف وايت دافئ (Warm Off-White)'],
- ['#EFE5D8','فانيليا لاتيه (Vanilla Latte)'],
- ['#E3D5C5','بيج رملي ناعم (Soft Sand)'],
- ['#D8C8B8','جريج دافئ (Warm Greige)'],
- ['#DFC5C0','كشمير وردي هادئ (Soft Cashmere)'],
- ['#C8D3C5','أخضر ميرمية مريح (Sage Green)'],
- ['#CBD4DC','أزرق سماوي هادئ (Serene Blue)'],
- ['#D6D6D6','رمادي لؤلؤي (Pearl Grey)'],
- ['#4A353B','موكا/برغندي فخم (Deep Mocha)'],
- ['#FFFFFF','أبيض ناصع (Pure White)']
+ ['#F5EFE6','أوف وايت دافئ'],['#EFE5D8','فانيليا لاتيه'],['#E3D5C5','بيج رملي ناعم'],['#D8C8B8','جريج دافئ'],
+ ['#DFC5C0','كشمير وردي هادئ'],['#C8D3C5','أخضر ميرمية مريح'],['#CBD4DC','أزرق سماوي هادئ'],['#D6D6D6','رمادي لؤلؤي'],
+ ['#4A353B','موكا/برغندي فخم'],['#FFFFFF','أبيض ناصع']
 ];
 
 const TXC={};
@@ -284,11 +268,9 @@ function tex(t){
  if(TXC[t])return TXC[t];
  const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');
  if(t=='wood'||t=='wood_dark'){
-  const dark=t=='wood_dark';
-  g.fillStyle=dark?'#5a3822':'#c69766';g.fillRect(0,0,512,512);
+  const dark=t=='wood_dark';g.fillStyle=dark?'#5a3822':'#c69766';g.fillRect(0,0,512,512);
   for(let i=0;i<8;i++){
-   g.fillStyle=i%2?(dark?'#4d2f1c':'#b98856'):(dark?'#684229':'#ce9f6f');
-   g.fillRect(0,i*64,512,61);
+   g.fillStyle=i%2?(dark?'#4d2f1c':'#b98856'):(dark?'#684229':'#ce9f6f');g.fillRect(0,i*64,512,61);
    g.strokeStyle='rgba(0,0,0,.07)';g.lineWidth=1.5;
    for(let k=0;k<6;k++){g.beginPath();g.moveTo(0,i*64+k*10+4);g.bezierCurveTo(170,i*64+k*10+12,340,i*64+k*10-4,512,i*64+k*10+6);g.stroke()}
    g.fillStyle='rgba(35,15,5,.28)';g.fillRect((i*137)%512,i*64,3,64);
@@ -302,15 +284,13 @@ function tex(t){
    g.beginPath();g.moveTo(x+128,y);g.lineTo(x+64,y+64);g.lineTo(x+64,y+128);g.lineTo(x+128,y+64);g.closePath();g.fill();g.stroke();
   }
  }else if(t=='por'){
-  g.fillStyle='#fbf9f5';g.fillRect(0,0,512,512);
-  g.strokeStyle='rgba(195,160,85,.38)';g.lineWidth=3.5;
+  g.fillStyle='#fbf9f5';g.fillRect(0,0,512,512);g.strokeStyle='rgba(195,160,85,.38)';g.lineWidth=3.5;
   for(let i=0;i<7;i++){g.beginPath();g.moveTo(i*80,0);g.bezierCurveTo(i*75+70,180,i*65-40,340,i*80+40,512);g.stroke()}
   g.strokeStyle='rgba(160,165,175,.25)';g.lineWidth=1.5;
   for(let i=0;i<5;i++){g.beginPath();g.moveTo(0,i*110);g.bezierCurveTo(180,i*100+40,340,i*115-30,512,i*110);g.stroke()}
   g.strokeStyle='rgba(205,200,190,.65)';g.lineWidth=3;g.strokeRect(2,2,508,508);
  }else if(t=='por_beige'){
-  g.fillStyle='#f1e8da';g.fillRect(0,0,512,512);
-  g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=4;
+  g.fillStyle='#f1e8da';g.fillRect(0,0,512,512);g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=4;
   for(let i=0;i<6;i++){g.beginPath();g.moveTo(0,i*95);g.bezierCurveTo(180,i*90+50,340,i*100-40,512,i*95);g.stroke()}
   g.strokeStyle='#d4c3af';g.lineWidth=3;g.strokeRect(0,0,256,256);g.strokeRect(256,0,256,256);g.strokeRect(0,256,256,256);g.strokeRect(256,256,256,256);
  }else if(t=='por_grey'){
@@ -324,15 +304,13 @@ function tex(t){
   g.fillStyle='#634532';g.fillRect(0,0,512,512);g.strokeStyle='rgba(245,225,195,.38)';g.lineWidth=2.4;
   for(let i=0;i<12;i++){g.beginPath();g.moveTo(Math.random()*512,0);g.bezierCurveTo(Math.random()*512,170,Math.random()*512,340,Math.random()*512,512);g.stroke()}
  }else if(t=='terrazzo'){
-  g.fillStyle='#f4ece1';g.fillRect(0,0,512,512);
-  const cols=['#d97b66','#8da99b','#e2b46d','#6b7b8c','#b5838d'];
+  g.fillStyle='#f4ece1';g.fillRect(0,0,512,512);const cols=['#d97b66','#8da99b','#e2b46d','#6b7b8c','#b5838d'];
   for(let i=0;i<160;i++){g.fillStyle=cols[i%cols.length];g.beginPath();const x=Math.random()*512,y=Math.random()*512,r=5+Math.random()*14;g.moveTo(x,y);g.lineTo(x+r,y+4);g.lineTo(x+5,y+r);g.closePath();g.fill()}
  }else if(t=='micro'){
   g.fillStyle='#e8dfd5';g.fillRect(0,0,512,512);
   for(let i=0;i<120;i++){g.fillStyle='rgba(255,255,255,.06)';g.beginPath();g.arc(Math.random()*512,Math.random()*512,45,0,Math.PI*2);g.fill()}
  }else if(t=='tile_hex'){
-  g.fillStyle='#e8eef0';g.fillRect(0,0,512,512);g.strokeStyle='#96a4ac';g.lineWidth=3.5;
-  const r=42,h=r*Math.sqrt(3);
+  g.fillStyle='#e8eef0';g.fillRect(0,0,512,512);g.strokeStyle='#96a4ac';g.lineWidth=3.5;const r=42,h=r*Math.sqrt(3);
   for(let y=0;y<560;y+=h/2)for(let x=0;x<560;x+=r*3){
    const ox=(Math.round(y/(h/2))%2)?r*1.5:0;
    g.beginPath();for(let k=0;k<6;k++){const a=k*Math.PI/3;g.lineTo(x+ox+r*Math.cos(a),y+r*Math.sin(a))}g.closePath();g.stroke();
@@ -348,17 +326,17 @@ function tex(t){
 }
 const tx=(t,a,b)=>{const T=tex(t).clone();T.needsUpdate=true;T.repeat.set(a,b);return T};
 
-/* ===== المخطط الهندسي الدقيق ===== */
+/* ===== المخطط الهندسي الدقيق + زوايا الدخول السينمائي ===== */
 const Z=[
- ['salon','الصالة',.3,3.45,5.67,7.88],
- ['corr','طرقة التوزيع',5.67,3.45,10.45,4.58],
- ['r1','غرفة 1',4.47,0,7.35,3.45],
- ['r2','غرفة 2',7.35,0,10.45,3.45],
- ['r3','غرفة 3 (الماستر)',10.45,.45,13.6,4.58],
- ['kit','المطبخ',5.67,4.58,7.8,7.58],
- ['man','منشر',7.8,4.58,9.07,5.85],
- ['bath','الحمام',9.57,4.58,11.85,6.3],
- ['bal','البلكونة',1.5,2.33,4.57,3.45]
+ ['salon','الصالة',.3,3.45,5.67,7.88,0],
+ ['corr','طرقة التوزيع',5.67,3.45,10.45,4.58,-Math.PI/2],
+ ['r1','غرفة 1',4.47,0,7.35,3.45,0],
+ ['r2','غرفة 2',7.35,0,10.45,3.45,0],
+ ['r3','غرفة 3 (الماستر)',10.45,.45,13.6,4.58,-Math.PI/2],
+ ['kit','المطبخ',5.67,4.58,7.8,7.58,Math.PI],
+ ['man','منشر',7.8,4.58,9.07,5.85,Math.PI],
+ ['bath','الحمام',9.57,4.58,11.85,6.3,Math.PI],
+ ['bal','البلكونة',1.5,2.33,4.57,3.45,0]
 ];
 const DEF={salon:'por',corr:'por',r1:'wood',r2:'wood',r3:'herring',kit:'por_beige',man:'tile',bath:'marble',bal:'terrazzo'};
 const DEF_CEIL={salon:'cove',corr:'linear',r1:'cove',r2:'cove',r3:'gold',kit:'linear',man:'flat',bath:'flat',bal:'wood_slats'};
@@ -626,7 +604,6 @@ const fCab=()=>{B(.6,.82,.6,0,0,0,1);B(.62,.04,.62,0,.82,0,'#f5f2eb');B(.25,.02,
 const fCh=()=>{B(.5,.06,.5,0,.45,0,1);B(.5,.52,.06,0,.5,-.22,1);C(.03,.45,0,0,0,'#333');C(.25,.03,0,0,0,'#333')};
 const fCu=()=>{B(1.6,2.4,.06,0,0,0,1);B(.04,2.4,.1,-.5,0,0,2);B(.04,2.4,.1,.5,0,0,2)};
 
-// إضاءة السقف (النجف متصل بالسقف دائماً ويمتد لتحت حسب الإعدادات)
 let curDrop=.35;
 const fCd=()=>{C(.13,.04,0,2.66,0,2);C(.015,curDrop,0,2.66-curDrop,0,'#b89b5e');const by=2.66-curDrop;C(.34,.04,0,by,0,1);for(let i=0;i<6;i++){const a=i*1.047;Sp(.065,Math.cos(a)*.29,by-.02,Math.sin(a)*.29,'#fff6e0','#ffe4b5')}LT(by-.12,1.25)};
 const fRings=()=>{C(.15,.04,0,2.66,0,1);const by=2.66-curDrop;[-.15,0,.15].forEach(x=>B(.008,curDrop+.12,.008,x,by-.1,0,'#bbb'));C(.44,.03,0,by,0,1);C(.4,.035,0,by-.002,0,'#fff8e7');C(.28,.03,0,by-.14,0,2);Sp(.12,0,by-.14,0,'#fff8e7','#ffe4b5');LT(by-.18,1.4)};
@@ -895,7 +872,7 @@ function fmenu(z){
  wsel=null;$('sel').style.display='none';sel=null;hl();
  const zObj=Z.find(x=>x[0]==z),curF=D.floors[z]||DEF[z],cCfg=(D.ceilings&&D.ceilings[z])||{},curC=cCfg.t||DEF_CEIL[z]||'cove',cCol=(cCfg.c||'#FAF7F2').toUpperCase(),ledOn=cCfg.led!==0;
  const p=$('wm');p.style.display='block';
- p.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px"><b>🏠 تشطيب وإضاءة ${zObj[1]}</b> <button data-a="x">✕</button></div>`
+ p.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px"><b>🏠 تشطيب وإضاءة ${zObj[1]}</b> <div><button data-fly="${z}" class="on">🚀 ادخل ${zObj[1]} بـ 3D</button> <button data-a="x">✕</button></div></div>`
  +`<div class="sec-div">1️⃣ اختار شكل الأرضية (الحالية: ${FLOOR_NAMES[curF]||curF}):</div>`
  +`<div class="gr" style="justify-content:center">`+FLOOR_CATALOG.map(t=>`<button data-fz="${z}" data-ft="${t[0]}" class="${curF===t[0]?'on':''}">${t[1]}</button>`).join('')+`</div>`
  +`<div class="sec-div">2️⃣ اختار نوع السقف والجبس بورد (الحالي: ${CEIL_NAMES[curC]||curC}):</div>`
@@ -911,6 +888,7 @@ function fmenu(z){
 $('wm').addEventListener('click',e=>{
  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
  if(d.a=='x'){$('wm').style.display='none';return}
+ if(d.fly){enterRoom3D(d.fly);return}
  if(d.copy){navigator.clipboard&&navigator.clipboard.writeText(d.copy);toast(`تم نسخ كود اللون ${d.copy} 📋`);return}
  if(d.savec){const pal=Array.isArray(D.palette)?D.palette.slice():[];if(!pal.includes(d.savec)){pal.push(d.savec);put('palette',pal);wmenu(wsel.id,wsel.f);toast(`اتحفظ اللون ${d.savec} في باليتة شقتنا ⭐`)}return}
  if(d.fz){put('floors/'+d.fz,d.ft);fmenu(d.fz);toast(`تم تغيير الأرضية إلى ${FLOOR_NAMES[d.ft]} ✨`);return}
@@ -1114,7 +1092,7 @@ let myAv=null,ptAv=null;
 function checkWallCollision(px,pz,rad){
  for(let w of WALLS){
   const [id,x1,z1,x2,z2,ext,rail,op]=w;
-  if(op&&(op[0]==='d'||op[0]==='a'))continue; // يمكن المرور من الأبواب والأقواس
+  if(op&&(op[0]==='d'||op[0]==='a'))continue;
   const L=Math.hypot(x2-x1,z2-z1),dx=(x2-x1)/L,dz=(z2-z1)/L;
   const t=((px-x1)*dx+(pz-z1)*dz);
   if(t>0&&t<L){
