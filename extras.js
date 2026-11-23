@@ -1,6 +1,5 @@
 /* ================= extras.js — لودو الاحترافية (Ludo King Style) + إصلاح مين فينا ================= */
 (function () {
-  // حفظ واسترجاع الأسماء عشان لو الصفحة اتعملها ريفريش
   try {
     if (Q.get('user')) {
       localStorage.setItem('lg_saved_user', Q.get('user'));
@@ -45,7 +44,7 @@
         osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(700, now + 0.1);
         gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
         osc.start(now); osc.stop(now + 0.1);
-      } else if (type === 'step') { // صوت خطوة البيدق
+      } else if (type === 'step') {
         osc.type = 'sine'; osc.frequency.setValueAtTime(600, now);
         gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
         osc.start(now); osc.stop(now + 0.05);
@@ -182,11 +181,9 @@
         let newP = targetLudo.pw[s][i];
         if (oldP !== newP) {
           if (newP === -1) {
-            // أكل: يرجع فجأة عشان اللعب ميتعطلش
             display_pw[s][i] = -1;
             playTone('capture');
           } else {
-            // نطة بنطة من المربع الحالي للجديد
             let start = oldP < 0 ? 0 : oldP + 1;
             for (let step = start; step <= newP; step++) {
               animQueue.push({ s, i, step });
@@ -200,14 +197,12 @@
 
   function processAnimQueue() {
     if (isAnimating || animQueue.length === 0) {
-      if (animQueue.length === 0) _drawLudoFrame(); // التحديث النهائي للنصوص والأدوار
+      if (animQueue.length === 0) _drawLudoFrame();
       return;
     }
     isAnimating = true;
     let m = animQueue.shift();
     display_pw[m.s][m.i] = m.step;
-    
-    // إضافة كلاس النطة للبيدق في الرسم
     window._hoppingPawn = `${m.s}-${m.i}`;
     playTone('step');
     _drawLudoFrame(true); 
@@ -216,9 +211,8 @@
       window._hoppingPawn = null;
       isAnimating = false;
       processAnimQueue();
-    }, 180); // سرعة النطة 180 ملي ثانية
+    }, 180);
   }
-
 
   /* ================= 5) هندسة اللوحة (180° Rotate) ورسم الجرافيك ================= */
   const PATH = [];
@@ -237,7 +231,6 @@
     [[1, 7], [2, 7], [3, 7], [4, 7], [5, 7], [6, 7]],     
     [[7, 13], [7, 12], [7, 11], [7, 10], [7, 9], [7, 8]]  
   ];
-
   const YARD_ORIGINS = [[9, 0], [0, 0], [0, 9], [9, 9]];
 
   function vCoord(r, c) { return mySeat() === 2 ? [14 - r, 14 - c] : [r, c]; }
@@ -248,63 +241,96 @@
     return `<div class="${cls}" style="left:${vc * U}%;top:${vr * U}%;width:${w * U}%;height:${h * U}%;${st || ''}">${inner || ''}</div>`;
   };
 
+  // نرد احترافي 3D ثابت النقط
   function renderDice3D(val, rolling) {
-    // نرد احترافي 3D
     const pips = { 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
     let dHtml = '';
-    for(let i=0; i<9; i++) {
-      dHtml += `<span class="pip ${(pips[val||6]||[4]).includes(i)?'on':''}">&nbsp;</span>`;
-    }
+    for(let i=0; i<9; i++) { dHtml += `<span class="pip ${(pips[val||6]||[4]).includes(i)?'on':''}">&nbsp;</span>`; }
     return `<div class="dice-wrapper ${rolling ? 'rolling' : ''}"><div class="dice-cube"><div class="dice-face">${dHtml}</div></div></div>`;
   }
 
-  function renderPawn3D(col) {
-    return `<div class="pawn-3d" style="--pc1:${col.main};--pc2:${col.dark}">
-              <div class="pawn-head"></div>
-              <div class="pawn-body"></div>
-              <div class="pawn-base"></div>
-            </div>`;
+  // بيدق SVG احترافي يمنع الانقلاب نهائياً
+  function renderPinSvg(col) {
+    return `
+      <svg viewBox="0 0 40 56" style="width:100%;height:100%;overflow:visible;filter:drop-shadow(0 3px 3px rgba(0,0,0,0.5));">
+        <defs>
+          <radialGradient id="g_${col.main.replace('#','')}" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="30%" stop-color="${col.light}"/>
+            <stop offset="75%" stop-color="${col.main}"/>
+            <stop offset="100%" stop-color="${col.dark}"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="20" cy="50" rx="16" ry="6" fill="${col.dark}" />
+        <path d="M12,48 C12,54 28,54 28,48 C28,35 24,20 24,20 L16,20 C16,20 12,35 12,48 Z" fill="url(#g_${col.main.replace('#','')})"/>
+        <circle cx="20" cy="18" r="14" fill="url(#g_${col.main.replace('#','')})"/>
+        <circle cx="15" cy="12" r="4" fill="rgba(255,255,255,0.6)"/>
+      </svg>
+    `;
+  }
+
+  function renderPlayerCard(seat, L, isMe, isActive) {
+    const active = SEATS(L.cpu).includes(seat);
+    const col = SEAT_COLORS[seat];
+    if (!active) return `<div class="ld-pcard empty"><span style="opacity:0.35;font-size:12px;">مقعد فارغ</span></div>`;
+    const name = seatName(seat, L);
+    const doneSteps = (L.pw[seat] || []).reduce((acc, p) => acc + (p < 0 ? 0 : p), 0);
+    const pct = Math.round((doneSteps / 224) * 100);
+    const canRoll = isMe && isActive && !L.d && L.st === 'play';
+    const diceVal = isActive ? (L.d || L.ld || 6) : (L.ld || 1);
+
+    return `
+      <div class="ld-pcard ${isActive ? 'active' : ''}" style="--pcol:${col.main};--pglow:${col.glow}">
+        <div class="ld-pavatar">${renderPinSvg(col)}</div>
+        <div class="ld-pinfo">
+          <div class="ld-pname">${esc(name)}</div>
+          <div class="ld-ppct">${pct}%</div>
+        </div>
+        ${isActive ? `
+          <button class="ld-dice-btn ${canRoll ? 'pulse' : ''}" ${canRoll ? 'data-a="lr"' : 'disabled'}>
+            ${renderDice3D(diceVal, false)}
+            ${canRoll ? '<span class="ld-tap-hand">👆</span>' : ''}
+          </button>
+        ` : ''}
+      </div>
+    `;
   }
 
   function buildLudoBoardHtml(L) {
     let h = '';
     const isFlipped = mySeat() === 2;
 
-    // 1. القواعد (Yards)
     YARD_ORIGINS.forEach(([yr, yc], s) => {
       const col = SEAT_COLORS[s];
-      h += cellHtml(yr, yc, 6, 6, 'ld-yard', `background:${col.main};`);
-      let socks = '';
-      [[0,0], [0,1], [1,0], [1,1]].forEach(([sr, sc]) => {
-        socks += `<div class="ld-socket"></div>`;
-      });
-      h += cellHtml(yr + 1, yc + 1, 4, 4, 'ld-yard-tray', '', `<div class="ld-sockets-grid">${socks}</div>`);
+      const doneSteps = (L.pw[s] || []).reduce((acc, p) => acc + (p < 0 ? 0 : p), 0);
+      const pct = Math.round((doneSteps / 224) * 100);
+      h += cellHtml(yr, yc, 6, 6, 'ld-yard', `background:linear-gradient(145deg,${col.main},${col.dark});`, '');
+      let socketsHtml = '';
+      [[0, 0], [0, 1], [1, 0], [1, 1]].forEach(() => { socketsHtml += `<div class="ld-socket" style="border-color:${col.main}55;"></div>`; });
+      h += cellHtml(yr + 1, yc + 1, 4, 4, 'ld-yard-tray', '', `<div class="ld-sockets-grid">${socketsHtml}</div>${SEATS(L.cpu).includes(s) ? `<div class="ld-yard-pct" style="color:${col.dark}">${pct}%</div>` : ''}`);
     });
 
-    // 2. المركز
-    const gradDeg = isFlipped ? '135deg' : '-45deg';
-    h += cellHtml(6, 6, 3, 3, 'ld-center', `background:conic-gradient(from ${gradDeg}, ${SEAT_COLORS[1].main} 0 90deg, ${SEAT_COLORS[2].main} 90deg 180deg, ${SEAT_COLORS[3].main} 180deg 270deg, ${SEAT_COLORS[0].main} 270deg 360deg);`);
+    // تصليح ألوان المركز عشان تبقى مظبوطة مع لفة الشاشة
+    const cGrad = isFlipped 
+      ? `conic-gradient(from -45deg, ${SEAT_COLORS[0].main} 0 90deg, ${SEAT_COLORS[1].main} 90deg 180deg, ${SEAT_COLORS[2].main} 180deg 270deg, ${SEAT_COLORS[3].main} 270deg 360deg)`
+      : `conic-gradient(from -45deg, ${SEAT_COLORS[2].main} 0 90deg, ${SEAT_COLORS[3].main} 90deg 180deg, ${SEAT_COLORS[0].main} 180deg 270deg, ${SEAT_COLORS[1].main} 270deg 360deg)`;
+    h += cellHtml(6, 6, 3, 3, 'ld-center', `background:${cGrad};`, '<div class="ld-center-gem">♥️</div>');
 
-    // 3. المسار الخارجي
     const startColorMap = { 39: SEAT_COLORS[0], 0: SEAT_COLORS[1], 13: SEAT_COLORS[2], 26: SEAT_COLORS[3] };
     const starColorMap = { 47: SEAT_COLORS[1], 8: SEAT_COLORS[2], 21: SEAT_COLORS[3], 34: SEAT_COLORS[0] };
 
     PATH.forEach(([r, c], idx) => {
-      let bg = '#fff', inner = '';
-      if (startColorMap[idx]) { bg = startColorMap[idx].main; inner = '<span class="ld-arrow">➜</span>'; }
+      let bg = '#ffffff', inner = '';
+      if (startColorMap[idx]) { bg = startColorMap[idx].main; inner = '<span class="ld-start-arrow">➜</span>'; }
       else if (starColorMap[idx]) { inner = `<span class="ld-star" style="color:${starColorMap[idx].main}">★</span>`; }
       h += cellHtml(r, c, 1, 1, 'ld-cell', `background:${bg};`, inner);
     });
 
-    // 4. مسارات الوصول
     HOME_STREAK.forEach((streak, s) => {
       const col = SEAT_COLORS[s];
-      for (let j = 0; j < 5; j++) {
-        h += cellHtml(streak[j][0], streak[j][1], 1, 1, 'ld-cell', `background:${col.main};opacity:0.9;`);
-      }
+      for (let j = 0; j < 5; j++) h += cellHtml(streak[j][0], streak[j][1], 1, 1, 'ld-cell', `background:linear-gradient(135deg,${col.main},${col.light});`, '');
     });
 
-    // 5. البيادق باستخدام display_pw المنسق
     const pwToDraw = display_pw || L.pw;
     const mv = (!isAnimating && L.st === 'play' && L.t === mySeat() && L.d) ? validMoves(L) : [];
     const stackCount = {};
@@ -315,48 +341,47 @@
         let r, c;
         if (p < 0) {
           const [yr, xc] = YARD_ORIGINS[s];
-          const offsets = [[1.4, 1.4], [1.4, 3.6], [3.6, 1.4], [3.6, 3.6]];
+          const offsets = [[1.45, 1.45], [1.45, 3.55], [3.55, 1.45], [3.55, 3.55]];
           r = yr + offsets[i][0]; c = xc + offsets[i][1];
-        } else if (p <= 50) {
-          [r, c] = PATH[(START_IDX[s] + p) % 52];
-        } else if (p < 56) {
-          [r, c] = HOME_STREAK[s][p - 51];
+        } else if (p <= 50) { [r, c] = PATH[(START_IDX[s] + p) % 52];
+        } else if (p < 56) { [r, c] = HOME_STREAK[s][p - 51];
         } else {
           [r, c] = HOME_STREAK[s][5];
-          const spread = (i - 1.5) * 0.2;
+          const spread = (i - 1.5) * 0.16;
           if (s === 0 || s === 2) c += spread; else r += spread;
         }
 
         const [vr, vc] = vCoord(r, c);
         const key = `${Math.round(vr * 10)},${Math.round(vc * 10)}`;
         const count = stackCount[key] = (stackCount[key] || 0) + 1;
-        const shift = (count - 1) * 0.12;
+        const shift = (count - 1) * 0.14;
         const canMove = (s === L.t && mv.includes(i));
         const isHopping = window._hoppingPawn === `${s}-${i}`;
 
         h += `<div class="ld-pawn-wrapper ${canMove ? 'movable' : ''} ${isHopping ? 'hopping' : ''}" 
                    style="left:${(vc + shift) * U}%;top:${(vr - shift) * U}%;width:${U}%;height:${U}%;"
                    ${canMove ? `data-a="lm" data-v="${i}"` : ''}>
-                ${renderPawn3D(col)}
+                ${renderPinSvg(col)}
               </div>`;
       });
     });
+
     return h;
   }
 
-  function _drawLudoFrame(skipUpdateState = false) {
+  function _drawLudoFrame() {
     const L = currentTargetLudo || G.ludo;
     if (!L || !L.st) return;
     
-    const meS = mySeat();
-    const isMyTurn = (L.t === meS && L.st === 'play');
-    const diceVal = (isMyTurn && !L.d) ? 6 : (L.ld || 1);
+    const meS = mySeat(), partnerS = (meS === 0 ? 2 : 0);
+    const topLeftSeat = (meS + 1) % 4, topRightSeat = partnerS, botLeftSeat = meS, botRightSeat = (meS + 3) % 4;
+
+    const diceVal = (L.t === meS && L.st === 'play' && !L.d) ? 6 : (L.ld || 1);
     
-    // شريط الحالة السفلي والنرد
     const actionHtml = L.st === 'done' 
       ? `<button class="go" data-a="lx">🎉 جولة جديدة</button>`
       : `<div class="ld-action-bar">
-          <div class="ld-dice-area" ${isMyTurn && !L.d && !isAnimating ? 'data-a="lr"' : ''}>
+          <div class="ld-dice-area" ${L.t === meS && !L.d && !isAnimating ? 'data-a="lr"' : ''}>
              ${renderDice3D(diceVal, window._rollingDice)}
           </div>
           <div class="ld-msg-area">${esc(L.m || '')}</div>
@@ -364,15 +389,16 @@
 
     const html = `
       <div class="bar" style="align-items:center;">
-        <span class="pill">🎲 لودو Ludo</span>
-        <button class="ld-reset-btn" data-a="lx">🔄 إعادة اللعب</button>
+        <span class="pill">🎲 لودو ${L.cpu ? '(4 لاعبين)' : '(ثنائي ♥️)'}</span>
+        <button class="ld-reset-btn" data-a="lx" title="إعادة بدء اللعبة">🔄 إعادة اللعب</button>
       </div>
-      <div class="ld-board-container">
-        <div class="ld-board-inner">
-          ${buildLudoBoardHtml(L)}
-        </div>
+      <div class="ld-arena-cabinet">
+        <div class="ld-hud-row">${renderPlayerCard(topLeftSeat, L, false, L.t === topLeftSeat)}${renderPlayerCard(topRightSeat, L, false, L.t === topRightSeat)}</div>
+        <div class="ld-board-frame"><div class="ld-board">${buildLudoBoardHtml(L)}</div></div>
+        <div class="ld-hud-row">${renderPlayerCard(botLeftSeat, L, true, L.t === botLeftSeat)}${renderPlayerCard(botRightSeat, L, false, L.t === botRightSeat)}</div>
       </div>
-      ${actionHtml}
+      <div class="ld-status-bar ${L.st === 'done' ? 'win' : ''}">${esc(L.m || '')}</div>
+      ${L.st === 'done' ? `<button class="go" style="margin-top:10px;" data-a="lx">🎉 جولة جديدة</button>` : ''}
     `;
     
     const sEl = $('stage');
@@ -381,15 +407,13 @@
 
   function dLudo(L) {
     if (!L || !L.st) {
-      display_pw = null;
-      isAnimating = false;
-      animQueue = [];
+      display_pw = null; isAnimating = false; animQueue = [];
       stage(
         bar('🎲 لودو 3D', 'اختار المود')
-        + `<div class="q" style="font-size:18px;">جاهزين للتحدي؟ ♥️🎲</div>`
-        + `<div class="row" style="gap:12px;margin-top:20px;">
+        + `<div class="q" style="font-size:19px;">جاهزين للتحدي؟ اختاروا مود اللعب ♥️🎲</div>`
+        + `<div class="row" style="gap:12px;margin-top:10px;">
             <button class="go" data-a="ls" data-v="0">💑 إحنا الاتنين بس (1 ضد 1)</button>
-            <button class="go alt" data-a="ls" data-v="1" style="width:100%">🤖 أنا و${esc(YOU)} ضد الكمبيوتر</button>
+            <button class="go alt" data-a="ls" data-v="1">🤖 أنا و${esc(YOU)} ضد كمبيوترين</button>
           </div>`
       );
       return;
@@ -397,130 +421,126 @@
     syncDisplayPw(L);
   }
 
-  // روبوت بيفكر ويلعب لوحده
   let lastBotStep = -1;
   function runBotTurn(L) {
     if (!L || L.st !== 'play' || !L.cpu || L.t % 2 === 0 || lastBotStep === L.n) return;
     lastBotStep = L.n;
-    const currentStep = L.n;
     setTimeout(() => {
-      if (isAnimating) { lastBotStep = -1; return; } // استنى الأنيميشن يخلص
+      if (isAnimating) { lastBotStep = -1; return; }
       R('ludo').transaction(s => {
-        if (!s || s.n !== currentStep || s.st !== 'play' || s.t % 2 === 0) return;
-        return s.d ? ludoMove(s, ludoBestBotMove(s), currentStep) : ludoRoll(s, currentStep);
+        if (!s || s.n !== L.n || s.st !== 'play' || s.t % 2 === 0) return;
+        return s.d ? ludoMove(s, ludoBestBotMove(s), L.n) : ludoRoll(s, L.n);
       });
-    }, 1200);
+    }, 950);
   }
 
-  // ================= 6) ربط الإجراءات (Actions) =================
+  /* ================= 6) ربط الإجراءات (Actions) ================= */
   Object.assign(act, {
-    ls(v) { R('ludo').set(ludoInit(+v)); },
+    ls(v) { playTone('move'); R('ludo').set(ludoInit(+v)); },
     lr() {
       if (window._rollingDice || isAnimating) return;
       playTone('dice');
       window._rollingDice = true;
-      _drawLudoFrame(); // تشغيل أنيميشن النرد
-      
+      _drawLudoFrame();
       setTimeout(() => {
         window._rollingDice = false;
-        R('ludo').transaction(s => {
-          if (!s || s.t !== mySeat() || s.d) return;
-          return ludoRoll(s);
-        });
-      }, 500); // النرد بيلف نص ثانية قبل ما يظهر الرقم
+        R('ludo').transaction(s => { if (!s || s.t !== mySeat() || s.d) return; return ludoRoll(s); });
+      }, 500);
     },
     lm(i) {
       if (isAnimating) return;
       R('ludo').transaction(s => {
         if (!s || s.t !== mySeat() || !s.d) return;
-        return ludoMove(s, +i);
+        const res = ludoMove(s, +i);
+        if (res) {
+          if (res.st === 'done') playTone('win');
+          else if (res.m && res.m.includes('أكل')) playTone('capture');
+          else playTone('step');
+        }
+        return res;
       });
     },
-    lx() { R('ludo').set(null); }
+    lx() { playTone('move'); R('ludo').set(null); }
   });
 
-  // ================= 7) ستايلات الـ 3D لودو =================
+  /* ================= 7) ستايلات الـ 3D لودو بعد الإصلاح ================= */
   const css = document.createElement('style');
   css.textContent = `
     .tabs { grid-template-columns: repeat(5, 1fr) !important; }
     .tab { font-size: 12px; }
-    .ld-reset-btn { background: transparent; color: #ffd166; border: 1px solid #ffd166; border-radius: 12px; padding: 4px 10px; font-size: 12px; cursor: pointer; transition: 0.2s; }
-    .ld-reset-btn:hover { background: #ffd166; color: #140209; }
+    .ld-reset-btn { background: rgba(255,42,95,0.2); color: #ffe0e9; border: 1px solid #ff4d6d; border-radius: 16px; padding: 4px 12px; font-size: 12px; font-weight: 800; transition: 0.2s; }
+    .ld-reset-btn:hover { background: #ff2a5f; color: #fff; transform: scale(1.04); }
+    
+    .ld-arena-cabinet { background: linear-gradient(180deg, #0a1f56 0%, #14368c 50%, #091b4a 100%); border: 2px solid #3b82f6; border-radius: 22px; padding: 10px 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.65), inset 0 0 20px rgba(59,130,246,0.35); max-width: 440px; margin: 0 auto 12px; }
+    .ld-hud-row { display: flex; justify-content: space-between; gap: 8px; margin: 4px 0; }
+    .ld-pcard { flex: 1; display: flex; align-items: center; gap: 6px; background: linear-gradient(180deg, #163b96, #0d2563); border: 1.5px solid rgba(130, 177, 255, 0.35); border-radius: 14px; padding: 5px 8px; min-height: 46px; position: relative; transition: 0.25s; }
+    .ld-pcard.empty { opacity: 0.4; justify-content: center; }
+    .ld-pcard.active { border-color: #ffd166; box-shadow: 0 0 14px var(--pglow, rgba(255,209,102,0.7)); background: linear-gradient(180deg, #1e4ec2, #112e7a); }
+    .ld-pavatar { width: 24px; height: 30px; flex-shrink: 0; }
+    .ld-pinfo { text-align: right; flex: 1; overflow: hidden; }
+    .ld-pname { font-size: 12px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ld-ppct { font-size: 10px; font-weight: 700; color: #ffd166; }
 
-    .ld-board-container {
-      background: linear-gradient(145deg, #1e1e2f, #151522);
-      border: 3px solid #333;
-      border-radius: 12px;
-      padding: 6px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.1);
-      margin-bottom: 15px;
-    }
-    .ld-board-inner {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      background: #f1f5f9;
-      border-radius: 6px;
-      overflow: hidden;
-    }
+    .ld-dice-btn { position: relative; width: 38px; height: 38px; padding: 3px; border-radius: 10px; border: 2px solid #ffd166; background: linear-gradient(145deg, #ffffff, #e2e8f0); box-shadow: 0 4px 10px rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ld-dice-btn.pulse { animation: dicePulse 0.85s infinite alternate; cursor: pointer; }
+    @keyframes dicePulse { from { transform: scale(1); box-shadow: 0 0 6px #ffd166; } to { transform: scale(1.14); box-shadow: 0 0 18px #ffd166; } }
+    .ld-tap-hand { position: absolute; bottom: -14px; right: -4px; font-size: 16px; animation: handBounce 0.6s infinite alternate; pointer-events: none; }
+    @keyframes handBounce { to { transform: translateY(-4px); } }
 
-    .ld-yard { position: absolute; box-sizing: border-box; }
-    .ld-yard-tray { position: absolute; background: #fff; border-radius: 20%; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; padding: 10%; }
-    .ld-sockets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20%; width: 100%; height: 100%; }
-    .ld-socket { border-radius: 50%; background: #e2e8f0; box-shadow: inset 0 3px 6px rgba(0,0,0,0.3); }
+    /* تصليح النرد عشان ميسيحش */
+    .dice-wrapper { width: 30px; height: 30px; perspective: 400px; }
+    .dice-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.1s; }
+    .dice-wrapper.rolling .dice-cube { animation: tumble 0.5s linear infinite; }
+    @keyframes tumble { 0%{transform:rotateX(0) rotateY(0) rotateZ(0);} 100%{transform:rotateX(360deg) rotateY(720deg) rotateZ(360deg);} }
+    .dice-face { position: absolute; width: 100%; height: 100%; background: linear-gradient(145deg, #fff, #f0f0f0); border-radius: 6px; border: 1px solid #ccc; box-shadow: inset 0 0 8px rgba(0,0,0,0.1); display: grid; grid-template-columns: repeat(3,1fr); grid-template-rows: repeat(3,1fr); gap: 1px; padding: 2px; place-items: center; }
+    .pip { width: 6px; height: 6px; background: transparent; border-radius: 50%; }
+    .pip.on { background: #111; box-shadow: inset 0 1px 2px rgba(255,255,255,0.5); }
+
+    .ld-board-frame { padding: 5px; border-radius: 16px; background: linear-gradient(135deg, #60a5fa, #1d4ed8); box-shadow: 0 6px 20px rgba(0,0,0,0.55); margin: 6px 0; }
+    .ld-board { position: relative; width: 100%; aspect-ratio: 1 / 1; background: #ffffff; border-radius: 12px; overflow: hidden; }
+
+    .ld-yard { position: absolute; box-sizing: border-box; border: 1px solid rgba(0,0,0,0.15); }
+    .ld-yard-tray { position: absolute; background: linear-gradient(145deg, #ffffff, #f1f5f9); border-radius: 16%; box-shadow: inset 0 2px 6px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8%; }
+    .ld-sockets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18%; width: 78%; height: 78%; }
+    .ld-socket { border-radius: 50%; background: #e2e8f0; border: 2px solid #cbd5e1; }
+    .ld-yard-pct { position: absolute; bottom: 2%; font-size: clamp(8px, 2.2vw, 11px); font-weight: 800; }
 
     .ld-cell { position: absolute; box-sizing: border-box; border: 0.5px solid #cbd5e1; display: flex; align-items: center; justify-content: center; }
-    .ld-arrow { color: #fff; font-size: clamp(10px, 3vw, 16px); text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-weight: bold; }
-    .ld-star { font-size: clamp(14px, 4vw, 22px); line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
-    .ld-center { position: absolute; box-sizing: border-box; border: 1px solid #94a3b8; }
+    .ld-start-arrow { color: #fff; font-size: clamp(9px, 2.6vw, 14px); font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+    .ld-star { font-size: clamp(11px, 3vw, 16px); line-height: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25)); }
+    .ld-center { position: absolute; box-sizing: border-box; border: 1px solid #94a3b8; display: flex; align-items: center; justify-content: center; }
+    .ld-center-gem { width: 44%; height: 44%; border-radius: 50%; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center; font-size: clamp(10px, 2.8vw, 15px); box-shadow: 0 2px 6px rgba(0,0,0,0.35); }
 
-    /* بيادق 3D احترافية */
+    /* بيادق بـ SVG عشان مستحيل تتشقلب */
     .ld-pawn-wrapper {
-      position: absolute;
-      z-index: 5;
-      transition: left 0.18s linear, top 0.18s linear; /* حركة خطية لأننا بننطها مربع مربع */
-      pointer-events: none;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      position: absolute; z-index: 5;
+      transition: left 0.18s linear, top 0.18s linear;
+      pointer-events: none; display: flex; align-items: flex-end; justify-content: center;
       transform: translateY(-20%);
     }
-    .pawn-3d {
-      width: 80%; height: 120%;
-      position: relative;
-      filter: drop-shadow(0 4px 3px rgba(0,0,0,0.6));
-    }
-    .pawn-base { position: absolute; bottom: 0; width: 100%; height: 30%; background: var(--pc2); border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
-    .pawn-body { position: absolute; bottom: 15%; left: 15%; width: 70%; height: 60%; background: linear-gradient(to right, var(--pc2), var(--pc1), var(--pc2)); clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); }
-    .pawn-head { position: absolute; top: 0; left: 10%; width: 80%; aspect-ratio: 1; background: radial-gradient(circle at 35% 35%, #fff 0%, var(--pc1) 40%, var(--pc2) 100%); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
-    
     .ld-pawn-wrapper.movable { pointer-events: auto; cursor: pointer; z-index: 10; animation: pawnBlink 1s infinite alternate; }
-    .ld-pawn-wrapper.movable::after { content: ''; position: absolute; bottom: -5px; width: 100%; height: 30%; border-radius: 50%; border: 2px solid #ffd166; box-shadow: 0 0 10px #ffd166; animation: ringBlink 1s infinite alternate; }
+    .ld-pawn-wrapper.movable::after { content: ''; position: absolute; bottom: 0; width: 70%; height: 30%; border-radius: 50%; border: 2px solid #ffd166; box-shadow: 0 0 10px #ffd166; animation: ringBlink 1s infinite alternate; }
     @keyframes pawnBlink { to { transform: translateY(-30%) scale(1.1); } }
     @keyframes ringBlink { to { transform: scale(1.3); opacity: 0; } }
 
-    /* أنيميشن النطة وقت الحركة */
-    .ld-pawn-wrapper.hopping .pawn-3d { animation: arcHop 0.18s ease-in-out; }
+    .ld-pawn-wrapper.hopping svg { animation: arcHop 0.18s ease-in-out; }
     @keyframes arcHop { 0%{transform:translateY(0) scale(1);} 50%{transform:translateY(-15px) scale(1.15);} 100%{transform:translateY(0) scale(1);} }
 
-    /* شريط التحكم السفلي والنرد الـ 3D */
     .ld-action-bar { display: flex; align-items: center; background: #1a1a2e; border: 1.5px solid #ffd166; border-radius: 16px; padding: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     .ld-dice-area { width: 50px; height: 50px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 12px; }
     .ld-dice-area[data-a="lr"] { background: rgba(255,209,102,0.2); border: 1px dashed #ffd166; animation: promptRoll 1s infinite alternate; }
     @keyframes promptRoll { to { transform: scale(1.05); } }
-    
-    .dice-wrapper { width: 40px; height: 40px; perspective: 400px; }
-    .dice-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.1s; }
-    .dice-wrapper.rolling .dice-cube { animation: tumble 0.5s linear infinite; }
-    @keyframes tumble { 0%{transform:rotateX(0) rotateY(0) rotateZ(0);} 100%{transform:rotateX(360deg) rotateY(720deg) rotateZ(360deg);} }
-    
-    .dice-face { position: absolute; width: 100%; height: 100%; background: linear-gradient(145deg, #fff, #f0f0f0); border-radius: 8px; border: 1px solid #ccc; box-shadow: inset 0 0 8px rgba(0,0,0,0.1); display: grid; grid-template-columns: repeat(3,1fr); grid-template-rows: repeat(3,1fr); padding: 4px; gap: 2px; }
-    .pip { background: transparent; border-radius: 50%; }
-    .pip.on { background: #111; box-shadow: inset 0 1px 2px rgba(255,255,255,0.5); }
-
     .ld-msg-area { flex: 1; text-align: right; padding-right: 12px; font-size: 14px; font-weight: 800; color: #ffe0e9; line-height: 1.4; }
+
+    .ld-status-bar { background: rgba(20, 2, 9, 0.9); border: 1.5px solid #ffd166; border-radius: 16px; padding: 9px 14px; font-size: 14px; font-weight: 800; color: #ffe0e9; max-width: 440px; margin: 0 auto; }
+    .ld-status-bar.win { background: linear-gradient(135deg, #ff2a5f, #c9184a); color: #fff; font-size: 16px; box-shadow: 0 0 20px rgba(255,42,95,0.7); }
   `;
   document.head.appendChild(css);
+
+  const tabsEl = document.querySelector('.tabs');
+  if (tabsEl && !tabsEl.querySelector('[data-v="ludo"]')) {
+    tabsEl.insertAdjacentHTML('beforeend', '<button class="tab" data-a="mode" data-v="ludo"><i>🎲</i>لودو</button>');
+  }
 
   const _draw = draw;
   draw = function () {
