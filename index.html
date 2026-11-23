@@ -8,101 +8,89 @@
 <style>
   :root { --c: #ff2a5f; --g: #ffd166; --r: #ff758f; --b: #ffe0e9; --line: rgba(255,117,143,.38); }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; padding: 12px 10px 40px; font-family: 'Cairo', system-ui, sans-serif; color: #fff; text-align: center; min-height: 100vh; background: radial-gradient(circle at 50% 0, #4a0823, #2b0514 45%, #140209); overflow-x: hidden; }
+  body { margin: 0; padding: 12px 10px 40px; font-family: 'Cairo', system-ui, sans-serif; color: #fff; text-align: center; min-height: 100vh; background: radial-gradient(circle at 50% 0, #4a0823, #2b0514 45%, #140209); }
   .w { max-width: 720px; margin: auto; }
   h1 { font-size: 30px; margin: 6px 0 14px; color: var(--b); text-shadow: 0 0 18px rgba(255,42,95,.8); }
   button { font-family: inherit; cursor: pointer; }
   
-  /* شريط التبويبات (أصبح 5 ألعاب) */
-  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 8px; border-radius: 22px; border: 1px solid var(--line); background: rgba(20,2,9,.8); margin-bottom: 16px; }
-  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 2px; border-radius: 16px; border: 1px solid transparent; background: rgba(255,255,255,.05); color: var(--b); font-size: 12px; font-weight: 700; transition: .2s; }
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 8px; border-radius: 22px; border: 1px solid var(--line); background: rgba(20,2,9,.8); margin-bottom: 16px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 2px; border-radius: 16px; border: 1px solid transparent; background: rgba(255,255,255,.05); color: var(--b); font-size: 13px; font-weight: 700; transition: .2s; }
   .tab i { font-style: normal; font-size: 20px; }
   .tab.on { background: linear-gradient(135deg, var(--c), #c9184a); border-color: var(--g); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,42,95,.5); }
   
-  /* مسرح الألعاب */
   .stage { min-height: 300px; padding: 18px 14px; border-radius: 26px; border: 2px solid var(--line); background: rgba(48,8,24,.85); box-shadow: 0 15px 40px rgba(0,0,0,.5), inset 0 0 25px rgba(255,42,95,.08); }
   .bar { display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .pill { padding: 4px 12px; border-radius: 20px; border: 1px solid var(--g); color: var(--g); font-size: 12px; font-weight: 800; background: rgba(255,209,102,.12); }
   .pill2 { padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,.1); font-size: 12px; font-weight: 700; }
-  .q { padding: 16px 12px; margin-bottom: 14px; border-radius: 22px; border: 3px solid var(--c); background: linear-gradient(135deg, #fff, #fff0f5); color: #4a0823; font-size: 20px; font-weight: 800; line-height: 1.6; box-shadow: 0 10px 30px rgba(255,42,95,.25); }
   
-  /* أزرار وكروت الألعاب */
+  .q { padding: 16px 12px; margin-bottom: 14px; border-radius: 22px; border: 3px solid var(--c); background: linear-gradient(135deg, #fff, #fff0f5); color: #4a0823; font-size: 20px; font-weight: 800; line-height: 1.6; box-shadow: 0 10px 30px rgba(255,42,95,.25); }
   .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-bottom: 14px; }
   .opt { padding: 12px; border-radius: 18px; border: 1.5px solid rgba(255,179,198,.4); background: rgba(255,255,255,.08); color: #fff; font-size: 15px; font-weight: 700; transition: .18s; }
   .opt:hover { background: rgba(255,42,95,.25); }
   .opt.sel { background: linear-gradient(135deg, var(--c), #a4133c); border-color: var(--g); box-shadow: 0 0 18px rgba(255,42,95,.6); transform: scale(1.02); }
   
-  /* النتائج والتحكم */
   .rev { padding: 14px; margin: 0 0 12px; border-radius: 20px; border: 2px solid var(--g); background: rgba(20,2,9,.88); line-height: 1.8; animation: pop .35s; }
-  .hide { display: none; }
+  .hide { visibility: hidden; }
   @keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
-  .go { padding: 10px 24px; border: 0; border-radius: 25px; background: linear-gradient(135deg, var(--g), #f4a261); color: #2b0514; font-size: 15px; font-weight: 800; box-shadow: 0 5px 15px rgba(255,209,102,.35); transition: 0.2s; }
-  .go:hover { transform: scale(1.03); }
-  .go.alt { background: rgba(255,255,255,.12); color: var(--b); border: 1px solid var(--line); box-shadow: none; }
-  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
   
-  /* عجلة الدلال وحجر ورقة مقص */
+  .go { padding: 10px 24px; border: 0; border-radius: 25px; background: linear-gradient(135deg, var(--g), #f4a261); color: #2b0514; font-size: 15px; font-weight: 800; box-shadow: 0 5px 15px rgba(255,209,102,.35); }
+  .go.alt { background: rgba(255,255,255,.12); color: var(--b); border: 1px solid var(--line); box-shadow: none; }
+  
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
   .rps { width: 86px; height: 90px; border-radius: 20px; border: 2px solid var(--line); background: rgba(255,255,255,.08); color: #fff; font-size: 14px; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
   .rps b { font-size: 30px; }
   .rps.sel, .rps:hover { background: var(--c); border-color: var(--g); transform: translateY(-3px); }
+  
   .wheel { position: relative; width: 210px; height: 210px; margin: 6px auto 14px; }
   .ptr { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 26px; z-index: 2; }
   .disc { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--g); box-shadow: 0 0 28px rgba(255,42,95,.6); background: conic-gradient(#ff2a5f 0deg 45deg, #7209b7 45deg 90deg, #c9184a 90deg 135deg, #f72585 135deg 180deg, #5c001e 180deg 225deg, #b5179e 225deg 270deg, #9d0208 270deg 315deg, #ff4d6d 315deg 360deg); transition: transform 3.6s cubic-bezier(.12,.8,.18,1); display: grid; place-items: center; }
-  .cap { width: 52px; height: 52px; border-radius: 50%; border: 3px solid #4a0823; background: radial-gradient(#fff, var(--g)); color: #4a0823; font-size: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+  .cap { width: 52px; height: 52px; border-radius: 50%; border: 3px solid #4a0823; background: radial-gradient(#fff, var(--g)); color: #4a0823; font-size: 22px; }
   
-  /* السيناريوهات */
   textarea { width: 100%; height: 86px; margin-bottom: 10px; padding: 12px; border-radius: 18px; border: 2px solid var(--c); background: #fff; color: #2b0514; font: 700 15px Cairo, sans-serif; resize: none; outline: 0; }
   
-  /* شات الألعاب */
   .chat { display: flex; flex-direction: column; height: 52vh; min-height: 360px; margin-top: 14px; border-radius: 24px; border: 1.5px solid var(--line); background: rgba(18,3,10,.92); overflow: hidden; }
-  .msgs { flex: 1; overflow-y: auto; padding: 12px 10px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+  .msgs { flex: 1; overflow-y: auto; padding: 12px 10px; display: flex; flex-direction: column; gap: 12px; }
   .m { position: relative; max-width: 84%; padding: 8px 14px; border-radius: 18px; font-weight: 600; line-height: 1.5; word-break: break-word; }
-  .m small { display: block; font-size: 11px; opacity: .7; margin-bottom: 2px; }
+  .m small { display: block; font-size: 11px; opacity: .7; }
   .me { align-self: flex-start; background: linear-gradient(135deg, #ff2a5f, #c9184a); border-top-right-radius: 4px; }
   .you { align-self: flex-end; background: #2f0b1c; border: 1px solid var(--line); border-top-left-radius: 4px; text-align: left; color: var(--b); cursor: pointer; }
   .sys { align-self: center; background: rgba(255,209,102,.1); color: var(--g); font-size: 13px; font-weight: 700; text-align: center; border: 1px dashed var(--g); width: 92%; padding: 6px 10px; border-radius: 14px; }
-  .rx { position: absolute; bottom: -11px; left: -4px; padding: 1px 6px; border-radius: 50%; background: #1e0410; border: 1px solid var(--c); z-index: 2; }
-  .typ { display: none; align-self: flex-end; margin: 0 12px 6px; padding: 10px 16px; border-radius: 16px; background: #2f0b1c; gap: 5px; border: 1px solid var(--line); }
+  
+  .rx { position: absolute; bottom: -11px; left: -4px; padding: 1px 6px; border-radius: 50%; background: #1e0410; border: 1px solid var(--c); }
+  .typ { display: none; align-self: flex-end; margin: 0 12px 6px; padding: 10px 16px; border-radius: 16px; background: #2f0b1c; gap: 5px; }
   .typ.show { display: inline-flex; }
   .typ i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); animation: bn 1.4s infinite both; }
-  .typ i:nth-child(2) { animation-delay: .16s; } .typ i:nth-child(3) { animation-delay: .32s; }
+  .typ i:nth-child(2) { animation-delay: .16s; } 
+  .typ i:nth-child(3) { animation-delay: .32s; }
   @keyframes bn { 0%, 80%, 100% { transform: none; opacity: .4; } 40% { transform: translateY(-6px); opacity: 1; } }
+  
   .cin { display: flex; gap: 8px; padding: 10px; border-top: 1px solid rgba(255,117,143,.25); background: #140209; }
   .cin input { flex: 1; min-width: 0; padding: 11px 16px; border-radius: 25px; border: 1px solid var(--c); background: #fff; color: #000; font: 700 15px Cairo, sans-serif; outline: 0; }
   
-  .home { margin-top: 18px; padding: 9px 28px; border-radius: 25px; border: 2px solid var(--c); background: rgba(20,2,9,.85); color: var(--b); font-size: 16px; font-weight: 700; width: 80%; max-width: 250px; }
-  .home:hover { background: var(--c); color: #fff; }
+  .home { margin-top: 18px; padding: 9px 28px; border-radius: 25px; border: 2px solid var(--c); background: rgba(20,2,9,.85); color: var(--b); font-size: 16px; font-weight: 700; }
   #err { position: fixed; inset: auto 10px 10px; padding: 10px; border-radius: 12px; background: #9d0208; font-size: 13px; display: none; z-index: 99; }
   
-  /* الردود (Reply) */
+  #authGate { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0, #4a0823, #140209); z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .auth-card { max-width: 420px; width: 100%; background: rgba(48,8,24,.92); border: 2px solid var(--g); border-radius: 26px; padding: 28px 20px; box-shadow: 0 15px 40px rgba(0,0,0,.7); }
+  
   .rq { border-right: 4px solid var(--g); background: rgba(0,0,0,.25); border-radius: 10px; padding: 4px 8px; margin-bottom: 5px; font-size: 12px; text-align: right; max-height: 3.6em; overflow: hidden; }
   .rq b { display: block; font-size: 11px; color: var(--g); }
   .ri { cursor: pointer; opacity: .7; font-size: 13px; margin-inline-start: 6px; }
   .rbar { display: none; align-items: center; gap: 8px; padding: 8px 14px; background: #240a14; border-top: 1px solid var(--line); border-right: 4px solid var(--c); font-size: 13px; text-align: right; }
   .rbar span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .rbar button { background: none; border: 0; color: var(--b); font-size: 16px; cursor: pointer; }
-  
-  /* تنسيقات رقعة لودو (Ludo) */
-  .lb { position: relative; width: min(96%, 400px); aspect-ratio: 1/1; margin: 6px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-  .lb i { position: absolute; display: grid; place-items: center; box-sizing: border-box; font-style: normal; font-size: clamp(8px, 2.4vw, 12px); color: #777; font-weight: 700; }
-  .lp { position: absolute; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.6); transition: left .3s, top .3s; z-index: 2; }
-  .lp.mv { cursor: pointer; z-index: 4; animation: lpp .7s infinite alternate; }
-  @keyframes lpp { to { transform: scale(1.25); box-shadow: 0 0 10px var(--g); } }
-  
-  /* بوابة الدخول */
-  #authGate { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0, #4a0823, #140209); z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-  .auth-card { max-width: 420px; width: 100%; background: rgba(48,8,24,.92); border: 2px solid var(--g); border-radius: 26px; padding: 28px 20px; box-shadow: 0 15px 40px rgba(0,0,0,.7); }
+  .rbar button { background: none; border: 0; color: var(--b); font-size: 16px; }
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
 </style>
 </head>
 <body>
 
 <div id="authGate">
   <div class="auth-card">
-    <div style="font-size:48px; margin-bottom:8px">🔒♥️</div>
-    <h2 style="margin:0 0 10px; color:var(--g)">ساحة خاصة بمصطفى وفريال</h2>
-    <p style="font-size:14px; color:var(--b); line-height:1.7; margin-bottom:20px">عشان محدش غريب يقدر يفتح اللينك ده غيركم، سجل دخول مرة واحدة بس بحساب جوجل بتاعك ♥️</p>
-    <button class="go" id="googleLoginBtn" style="width:100%; padding:13px; font-size:16px">دخول بحساب جوجل (Gmail) 🔑</button>
-    <p id="authMsg" style="color:#ff758f; font-size:13px; margin-top:14px; display:none"></p>
+    <div style="font-size:48px;margin-bottom:8px">🔒♥️</div>
+    <h2 style="margin:0 0 10px;color:var(--g)">ساحة خاصة بمصطفى وفريال</h2>
+    <p style="font-size:14px;color:var(--b);line-height:1.7;margin-bottom:20px">عشان محدش غريب يقدر يفتح اللينك ده غيركم، سجل دخول مرة واحدة بس بحساب جوجل بتاعك ♥️</p>
+    <button class="go" id="googleLoginBtn" style="width:100%;padding:13px;font-size:16px">دخول بحساب جوجل (Gmail) 🔑</button>
+    <p id="authMsg" style="color:#ff758f;font-size:13px;margin-top:14px;display:none"></p>
   </div>
 </div>
 
@@ -113,11 +101,10 @@
     <button class="tab" data-a="mode" data-v="whofirst"><i>😂</i>مين فينا؟</button>
     <button class="tab" data-a="mode" data-v="wheel"><i>🎡</i>عجلة الدلال</button>
     <button class="tab" data-a="mode" data-v="scenario"><i>🏡</i>لو كنا...</button>
-    <button class="tab" data-a="mode" data-v="ludo"><i>🎲</i>لودو</button>
   </div>
   
   <div class="stage" id="stage">
-    <div style="color:var(--b); margin-top:50px;">جاري تحميل الساحة... ⏳♥️</div>
+    <div style="color:var(--b); margin-top:50px;">جاري تجهيز الساحة... ⏳♥️</div>
   </div>
   
   <div class="chat">
@@ -139,7 +126,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
-// ================= إعدادات Firebase =================
+// إعدادات قاعدة بيانات Firebase (شغالة مباشر من المتصفح لسرعة طلقة)
 const FB = {
   apiKey: "AIzaSyCmwupjdLgNzLFyOxNuTTRFgp0yVoyK-YI",
   authDomain: "love-games-b3018.firebaseapp.com",
@@ -151,9 +138,9 @@ const FB = {
 };
 
 const ALLOWED_EMAILS = ["moustafaelsawy7@gmail.com", "feryal.yasser.edu@gmail.com"];
-const REQUIRE_GMAIL_AUTH = false; // غيّرها لـ true لتفعيل حماية الدخول بالجيميل
+const REQUIRE_GMAIL_AUTH = false; // لو عايز الحماية، خليها true
 
-// ================= بنوك الألعاب =================
+// بنوك الألعاب الأساسية
 const telepathyBank = [
   { q: "لو قررنا نهرب سوا دلوقتي من غير تخطيط، أول مكان هنروحه؟", opts: ["البحر قدام الموج 🌊", "كافيه هادي ورايق ☕", "تمشية بالعربية بالليل 🚗", "نقعد في البيت نطلب أكل 🍕"] },
   { q: "إيه أكتر حاجة بتصالح الطرف التاني وتروق مزاجه في ثانية؟", opts: ["كلمة حلوة وحضن دافي 🫂", "أكلة أو شوكولاتة بيحبها 🍫", "خروجة وتغيير جو فجأة 🎡", "هدية بسيطة غير متوقعة 🎁"] },
@@ -186,20 +173,24 @@ const scenarioBank = [
   "لو هنعمل مشروع صغير أو حاجة مجنونة سوا تكسر الروتين في حياتنا.. تفتكر إيه أنسب فكرة لينا؟ 💡🚀"
 ];
 
-// ================= الأساسيات والمتغيرات =================
-const Q = new URLSearchParams(location.search), $ = i => document.getElementById(i);
+// المتغيرات والتهيئة الأساسية
+const Q = new URLSearchParams(location.search);
+const $ = i => document.getElementById(i);
 const K = n => String(n).replace(/[.#$\[\]\/]/g, '_');
-let ME = Q.get('user') || 'مصطفى', YOU = Q.get('partner') || 'فريال', MK = K(ME), YK = K(YOU);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+let ME = Q.get('user') || 'مصطفى', YOU = Q.get('partner') || 'فريال';
+let MK = K(ME), YK = K(YOU);
 let db, base = 'rooms/' + K(Q.get('room') || 'main') + '/', G = {}, mode = Q.get('mode') || 'telepathy', lastSpin, rot = 0, tt;
-const R = p => db.ref(base + 'g/' + p), stage = h => { $('stage').innerHTML = h };
+
+const R = p => db.ref(base + 'g/' + p);
+const stage = h => { $('stage').innerHTML = h; };
 const EM = { rock: '🪨', paper: '📄', scissors: '✂️' };
 
 const bar = (a, b) => `<div class="bar"><span class="pill">${a}</span><span class="pill2">${b}</span></div>`;
 const wait = (ok, yo, my, verb) => ok ? 'اتكشفت النتيجة ✨' : yo ? `✅ ${esc(YOU)} ${verb} ومستنيك` : my ? `⏳ مستني ${esc(YOU)}` : 'اختار في السر';
 
-// ================= دوال السحب العشوائي المانع للتكرار =================
+// دالة منع التكرار
 function nxt(len, u, cur) {
   u = Array.isArray(u) ? u : [];
   let a = [...Array(len).keys()].filter(i => !u.includes(i) && i !== cur);
@@ -209,7 +200,11 @@ function nxt(len, u, cur) {
   return { q: n, u: u.concat(n) };
 }
 
-// ================= دوال رسم الـ 4 ألعاب الأساسية =================
+function sysMsg(txt) {
+  if (db) db.ref(base + 'chat').push({ u: 'system', t: txt, ts: firebase.database.ServerValue.TIMESTAMP });
+}
+
+// 1. التخاطر
 function dTele(t) {
   const L = telepathyBank, q = L[(t.q || 0) % L.length], c = t.c || {}, my = c[MK], yo = c[YK], ok = my && yo, rate = t.t ? Math.round((t.m || 0) / t.t * 100) : 100;
   stage(bar(`🧠 التخاطر ${rate}% (${t.m || 0}/${t.t || 0})`, wait(ok, yo, my, 'اختار'))
@@ -218,31 +213,27 @@ function dTele(t) {
     + `<button class="go" data-a="tn">سؤال تخاطر جديد 🔄✨</button>`);
 }
 
+// 2. مين فينا (تم وضع دالة الإصلاح الأساسية هنا مباشرة)
 function dWho(w) {
   const L = whoFirstBank, v = w.v || {}, my = v[MK], yo = v[YK], ok = my && yo;
-  // التصليح: استخدام "me" و "you" لضمان عدم اختلاط الأسماء
-  const myNameDisplay = my === MK ? ME : YOU;
-  const yoNameDisplay = yo === MK ? ME : YOU;
-  const isMatch = my === yo;
-  const isBothMe = my === MK && yo === YK; // كل واحد شاور على نفسه
-
+  const nmk = k => (k === MK ? ME : YOU);
+  
   stage(bar('😂 مين فينا اللي...؟', wait(ok, yo, my, 'صوّت'))
     + `<div class="q">${esc(L[(w.q || 0) % L.length])}</div><div class="opts">`
     + `<button class="opt ${my === MK ? 'sel' : ''}" data-a="wv" data-v="me">🙋 أنا (${esc(ME)})</button>`
     + `<button class="opt ${my === YK ? 'sel' : ''}" data-a="wv" data-v="you">💑 ${esc(YOU)}</button></div>`
-    + (ok ? `<div class="rev"><b>${isMatch ? `😂 إجماع على (${esc(myNameDisplay)})! ♥️` : isBothMe ? '😄 كل واحد شاور على نفسه! 😂' : '😄 كل واحد شاور على التاني!'}</b><br>تصويتك: ${esc(myNameDisplay)} | تصويت ${esc(YOU)}: ${esc(yoNameDisplay)}</div>` : '')
+    + (ok ? `<div class="rev"><b>${my === yo ? `😂 إجماع على (${esc(nmk(my))})! ♥️` : (my === MK && yo === YK) ? '😄 كل واحد شاور على نفسه! 😂' : '😄 كل واحد شاور على التاني!'}</b><br>تصويتك: ${esc(nmk(my))} | تصويت ${esc(YOU)}: ${esc(nmk(yo))}</div>` : '')
     + `<button class="go" data-a="wn">الموقف اللي بعده 🔄😂</button>`);
 }
 
+// 3. عجلة الدلال
 function dWheel(w) {
   const r = w.r || {}, my = r[MK], yo = r[YK], win = w.win ? (w.win === MK ? ME : YOU) : '';
   let from = rot, anim = false;
-  
   if (w.spin && w.spin !== lastSpin) { lastSpin = w.spin; rot = rot - rot % 360 + 2160 - ((w.slice || 0) * 45 + 22.5); anim = true; }
   
   const rpsStatus = yo ? `🔥 ${esc(YOU)} اختار حركته ومستنيك!` : (my ? `🔒 تم قفل حركتك.. في انتظار ${esc(YOU)}` : 'اختار حركتك في السر (مبتتغيرش)');
-  const ctl = w.dare
-    ? `<div class="rev ${anim ? 'hide' : ''}" id="res"><small>حكم الدلال لصالح <b>${esc(win)}</b>:</small><div style="font-size:19px;font-weight:800;line-height:1.6">${esc(w.dare)}</div></div><div class="row"><button class="go" data-a="sp">لف العجلة تاني 🎡</button><button class="go alt" data-a="wr">جولة حجر ورقة مقص ✂️</button></div>`
+  const ctl = w.dare ? `<div class="rev ${anim ? 'hide' : ''}" id="res"><small>حكم الدلال لصالح <b>${esc(win)}</b>:</small><div style="font-size:19px;font-weight:800;line-height:1.6">${esc(w.dare)}</div></div><div class="row"><button class="go" data-a="sp">لف العجلة تاني 🎡</button><button class="go alt" data-a="wr">جولة حجر ورقة مقص جديدة ✂️</button></div>`
     : win ? `<p class="pill" style="display:inline-block">🎉 ${esc(win)} كسب الجولة!</p><br><br><button class="go" data-a="sp">🎡 لف عجلة الدلال دلوقتي</button>`
     : `<p style="margin:4px 0;color:var(--g);font-weight:700">${esc(w.msg || 'العبوا حجر ورقة مقص أو لف العجلة مباشرة')}</p><p style="margin:2px 0 8px;font-size:12px;color:var(--b)">${rpsStatus}</p><div class="row">${['rock', 'paper', 'scissors'].map((m, i) => `<button class="rps ${my === m ? 'sel' : ''}" data-a="rp" data-v="${m}"><b>${EM[m]}</b>${['حجر', 'ورقة', 'مقص'][i]}</button>`).join('')}</div><br><button class="go" data-a="sp">🎡 لف العجلة دلوقتي</button>`;
   
@@ -254,6 +245,8 @@ function dWheel(w) {
     setTimeout(() => { const e = $('res'); if (e) e.classList.remove('hide'); }, 3700);
   }
 }
+
+// 4. السيناريو
 function dScn(s) {
   const L = scenarioBank, a = s.a || {}, my = a[MK], yo = a[YK], ok = my && yo;
   stage(bar('🏡 لو كنا في الموقف ده', wait(ok, yo, my, 'كتب السيناريو'))
@@ -263,137 +256,68 @@ function dScn(s) {
     + `<button class="go alt" data-a="sn">سيناريو جديد 🔄🏡</button>`);
 }
 
-// ================= 5. رسم ولعبة لودو المدمجة =================
-const LC = ['#e63946', '#2a9d8f', '#e9c46a', '#3a86ff'], SAFE = [0, 8, 13, 21, 26, 34, 39, 47];
-const ms = () => { const k = [MK, YK].sort(); return k.indexOf(MK) === 0 ? 0 : 2; }; // مقعدي 0 أو 2
-const nm = s => { const k = [MK, YK].sort(); return s === 0 ? (k[0] === MK ? ME : YOU) : s === 2 ? (k[1] === MK ? ME : YOU) : '🤖 كمبيوتر ' + (s === 1 ? 1 : 2); };
-
-const SEATS = c => c ? [0, 1, 2, 3] : [0, 2];
-const nxtSeat = s => { const L = SEATS(s.cpu); return L[(L.indexOf(s.t) + 1) % L.length]; };
-const moves = s => { const o = []; (s.pw[s.t] || []).forEach((p, i) => { if (p < 0 ? s.d === 6 : p + s.d <= 56) o.push(i); }); return o; };
-
-function ludoInit(c) { return { st: 'play', cpu: c, t: 0, d: 0, ld: 0, pw: [0, 1, 2, 3].map(() => [-1, -1, -1, -1]), m: 'ابدأ برمي النرد 🎲', n: Date.now() / 1000 | 0 }; }
-
-function ludoRoll(s, exp) {
-  if (!s || s.st !== 'play' || s.d || (exp != null && s.n !== exp)) return;
-  s.d = 1 + Math.random() * 6 | 0; s.ld = s.d; s.n++;
-  if (!moves(s).length) { s.m = nm(s.t) + ' رمى ' + s.d + ' ومفيش حركة ⏭'; s.d = 0; s.t = nxtSeat(s); }
-  else s.m = nm(s.t) + ' رمى ' + s.d;
-  return s;
-}
-
-function ludoMove(s, i, exp) {
-  if (!s || s.st !== 'play' || !s.d || (exp != null && s.n !== exp) || !moves(s).includes(i)) return;
-  const t = s.t, P = s.pw[t], d = s.d, np = P[i] < 0 ? 0 : P[i] + d; P[i] = np; let cap = 0;
-  if (np <= 50) {
-    const ab = (13 * t + np) % 52;
-    if (!SAFE.includes(ab)) SEATS(s.cpu).forEach(o => { if (o !== t) s.pw[o].forEach((q, j) => { if (q >= 0 && q <= 50 && (13 * o + q) % 52 === ab) { s.pw[o][j] = -1; cap = 1; } }); });
-  }
-  s.n++; s.ld = d;
-  if (P.every(p => p === 56)) { s.st = 'done'; s.w = t; s.d = 0; s.m = '🎉 ' + nm(t) + ' خلّص كل بيادقه!'; return s; }
-  const ex = d === 6 || cap || np === 56; s.d = 0; if (!ex) s.t = nxtSeat(s);
-  s.m = nm(t) + ' حرّك' + (cap ? ' وأكل بيدق 💥' : '') + (np === 56 ? ' وأوصل بيدق للبيت 🏠' : '') + (ex ? ' ويلعب تاني' : '');
-  return s;
-  function ludoBest(s) {
-  const t = s.t, d = s.d; let bi = -1, bs = -1e9;
-  moves(s).forEach(i => {
-    const p = s.pw[t][i], np = p < 0 ? 0 : p + d; let sc = np / 5;
-    if (np === 56) sc += 100; if (p < 0) sc += 40; if (np > 50) sc += 25;
-    if (np <= 50) {
-      const ab = (13 * t + np) % 52;
-      if (SAFE.includes(ab)) sc += 8;
-      else SEATS(s.cpu).forEach(o => { if (o !== t) s.pw[o].forEach(q => { if (q >= 0 && q <= 50 && (13 * o + q) % 52 === ab) sc += 60; }); });
-    }
-    if (sc > bs) { bs = sc; bi = i; }
-  });
-  return bi;
-}
-
-const PATH = [];
-[[6, 1, 0, 1, 5], [5, 6, -1, 0, 6], [0, 7, 0, 1, 2], [1, 8, 1, 0, 5], [6, 9, 0, 1, 6], [7, 14, 1, 0, 2], [8, 13, 0, -1, 5], [9, 8, 1, 0, 6], [14, 7, 0, -1, 2], [13, 6, -1, 0, 5], [8, 5, 0, -1, 6], [7, 0, -1, 0, 2]]
-  .forEach(([r, c, a, b, n]) => { for (let i = 0; i < n; i++) PATH.push([r + a * i, c + b * i]); });
-const lRot = (p, k) => { let r = p[0], c = p[1]; for (let i = 0; i < k; i++) [r, c] = [c, 14 - r]; return [r, c]; };
-const U = 100 / 15, lBox = (r, c, w, h, st, tx) => `<i style="left:${c * U}%;top:${r * U}%;width:${w * U}%;height:${h * U}%;${st || ''}">${tx || ''}</i>`;
-
-function ludoBoard(L) {
-  let h = '';
-  [[0, 0], [0, 9], [9, 9], [9, 0]].forEach((p, s) => { h += lBox(p[0], p[1], 6, 6, 'background:' + LC[s]) + lBox(p[0] + 1, p[1] + 1, 4, 4, 'background:#fff;border-radius:50%'); });
-  h += lBox(6, 6, 3, 3, `background:conic-gradient(from -45deg,${LC[1]} 0 90deg,${LC[2]} 90deg 180deg,${LC[3]} 180deg 270deg,${LC[0]} 270deg 360deg)`);
-  PATH.forEach((p, i) => { h += lBox(p[0], p[1], 1, 1, `background:${i % 13 === 0 ? LC[i / 13] + 'bb' : '#fff'};border:1px solid #bbb`, i % 13 === 8 ? '★' : ''); });
-  for (let s = 0; s < 4; s++) for (let j = 0; j < 5; j++) { const q = lRot([7, 1 + j], s); h += lBox(q[0], q[1], 1, 1, `background:${LC[s]}cc;border:1px solid #fff`); }
-  const mv = L.st === 'play' && L.t === ms() && L.d ? moves(L) : [], cnt = {};
-  SEATS(L.cpu).forEach(s => L.pw[s].forEach((p, i) => {
-    let r, c;
-    if (p < 0) { [r, c] = lRot([[1, 1], [1, 4], [4, 1], [4, 4]][i], s); }
-    else if (p <= 50) { [r, c] = PATH[(13 * s + p) % 52]; }
-    else if (p < 56) { [r, c] = lRot([7, 1 + p - 51], s); }
-    else { [r, c] = [[7, 6.3], [6.3, 7], [7, 7.7], [7.7, 7]][s]; if (s % 2) c += (i % 2 ? .12 : -.12); else r += (i % 2 ? .12 : -.12); }
-    const k = r + ',' + c, o = cnt[k] = (cnt[k] || 0) + 1, off = (o - 1) * .14, can = s === L.t && mv.includes(i);
-    h += `<b class="lp${can ? ' mv' : ''}" style="left:${(c + .11 + off) * U}%;top:${(r + .11 - off) * U}%;width:${U * .78}%;height:${U * .78}%;background:${LC[s]}"${can ? ` data-a="lm" data-v="${i}"` : ''}></b>`;
-  }));
-  return h;
-}
-
-function dLudo(L) {
-  if (!L || !L.st) {
-    stage(bar('🎲 لودو', 'اختار طريقة اللعب') + `<div class="q">لودو ♥️</div><div class="row"><button class="go" data-a="ls" data-v="1">🤖 أنا و${esc(YOU)} ضد كمبيوترين</button><button class="go alt" data-a="ls" data-v="0">💑 إحنا الاتنين بس</button></div>`);
-    return;
-  }
-  const my = L.t === ms() && L.st === 'play', dc = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][L.d || L.ld || 0];
-  stage(bar('🎲 لودو' + (L.cpu ? ' — إحنا ضد الكمبيوتر 🤖' : ''), L.st === 'done' ? 'خلصت اللعبة' : `الدور: <b style="color:${LC[L.t]}">${esc(nm(L.t))}</b>`)
-    + `<div class="lb">${ludoBoard(L)}</div><div style="font-size:46px;line-height:1.1;color:var(--g);text-shadow:0 2px 5px rgba(0,0,0,0.5);">${dc}</div><div class="rev" style="padding:8px">${esc(L.m || '')}</div>`
-    + (L.st === 'done' ? '<button class="go" data-a="lx">🔄 لعبة جديدة</button>' : my && !L.d ? '<button class="go" data-a="lr">🎲 ارمي النرد</button>' : my ? '<small style="color:var(--b)">اختار بيدق بيلمع عشان تحركه 👆</small>' : ''));
-}
-
-let kBot = 0;
-function bots(L) {
-  if (!L || L.st !== 'play' || !L.cpu || L.t % 2 === 0 || kBot === L.n) return;
-  kBot = L.n; const n = L.n;
-  setTimeout(() => R('ludo').transaction(s => { if (!s || s.n !== n) return; return s.d ? ludoMove(s, ludoBest(s), n) : ludoRoll(s, n); }), 1100);
-}
-
-// ================= توجيه ورسم الشاشة =================
-function draw() {
+// دالة التوجيه الأساسية
+let draw = function() {
   if (mode === 'scenario' && document.activeElement && document.activeElement.id === 'sbox') return;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.v === mode));
-  if (mode === 'ludo') {
-    dLudo(G.ludo); bots(G.ludo);
-  } else {
-    ({telepathy: dTele, whofirst: dWho, wheel: dWheel, scenario: dScn}[mode] || dTele)(G[mode] || {});
-  }
-}
+  ({ telepathy: dTele, whofirst: dWho, wheel: dWheel, scenario: dScn }[mode] || dTele)(G[mode] || {});
+};
 
-// ================= تفاعلات الأزرار والأكشنز =================
+// ================= قاموس الأوامر والإجراءات =================
 const act = {
   mode(m) { mode = m; draw(); },
-  tp(i) { const o = telepathyBank[((G.telepathy||{}).q||0)%telepathyBank.length].opts[i]; R('telepathy').transaction(t => { t=t||{}; t.c=t.c||{}; if(Object.keys(t.c).length>=2) return t; t.c[MK]=o; const v=Object.values(t.c); if(v.length==2) { t.t=(t.t||0)+1; if(v[0]===v[1]) t.m=(t.m||0)+1; } return t; }); },
-  tn() { R('telepathy').transaction(t => { t=t||{}; return Object.assign(nxt(telepathyBank.length, t.u, t.q), {m: t.m||0, t: t.t||0}); }); },
-  wv(v) { const k = v === 'me' ? MK : YK; R('whofirst').transaction(w => { w=w||{}; w.v=w.v||{}; if(Object.keys(w.v).length<2) w.v[MK]=k; return w; }); },
-  wn() { R('whofirst').transaction(w => nxt(whoFirstBank.length, (w||{}).u, (w||{}).q)); },
-  rp(m) { R('wheel').transaction(w => { w=w||{}; if(w.win) return w; w.r=w.r||{}; if(w.r[MK]) return w; w.r[MK]=m; const k=Object.keys(w.r); if(k.length==2) { const x=w.r[k[0]], y=w.r[k[1]], tie=x===y, f=(x=='rock'&&y=='scissors')||(x=='paper'&&y=='rock')||(x=='scissors'&&y=='paper'); delete w.r; w.msg=EM[x]+' ضد '+EM[y]+(tie?' — تعادل! العبوا تاني ⚡':''); if(!tie) w.win=f?k[0]:k[1]; } return w; }); },
-  sp() { R('wheel').transaction(w => { w=w||{}; const nextDare=nxt(wheelDaresBank.length, w.u, w.q); const s=Math.random()*8|0; return {win: w.win||MK, spin: Date.now(), slice: s, q: nextDare.q, u: nextDare.u, dare: wheelDaresBank[nextDare.q]}; }); },
-  wr() { R('wheel').transaction(w => { w=w||{}; return {u: w.u||[], q: w.q||0}; }); },
-  ss() { const t=($('sbox')||{}).value; if(!t||!t.trim()) return; R('scenario').transaction(s => { s=s||{}; s.a=s.a||{}; if(Object.keys(s.a).length<2) s.a[MK]=t.trim(); return s; }); },
-  sn() { R('scenario').transaction(s => nxt(scenarioBank.length, (s||{}).u, (s||{}).q)); },
-  ls(v) { R('ludo').transaction(s => s && s.st ? s : ludoInit(+v)); },
-  lr() { R('ludo').transaction(s => (s && s.t === ms()) ? ludoRoll(s) : undefined); },
-  lm(i) { R('ludo').transaction(s => (s && s.t === ms()) ? ludoMove(s, +i) : undefined); },
-  lx() { R('ludo').set(null); },
-  rx(k) { db.ref(base+'chat/'+k+'/r').transaction(r => ({'':'❤️','❤️':'🥺','🥺':'😂','😂':''}[r||''])); },
-  home() { const h=Q.get('home'); h? location.href=h : window.close(); }
+  
+  tp(i) {
+    const o = telepathyBank[((G.telepathy || {}).q || 0) % telepathyBank.length].opts[i];
+    R('telepathy').transaction(t => { t = t || {}; t.c = t.c || {}; if (Object.keys(t.c).length >= 2) return t; t.c[MK] = o; const v = Object.values(t.c); if (v.length == 2) { t.t = (t.t || 0) + 1; if (v[0] === v[1]) t.m = (t.m || 0) + 1; } return t; });
+  },
+  tn() { R('telepathy').transaction(t => { t = t || {}; return Object.assign(nxt(telepathyBank.length, t.u, t.q), { m: t.m || 0, t: t.t || 0 }); }); },
+  
+  // التصليح: استخدام القيم me و you الممررة من الواجهة
+  wv(v) {
+    const k = (v === 'me') ? MK : YK;
+    R('whofirst').transaction(w => { w = w || {}; w.v = w.v || {}; if (Object.keys(w.v).length < 2) w.v[MK] = k; return w; });
+  },
+  wn() { R('whofirst').transaction(w => nxt(whoFirstBank.length, (w || {}).u, (w || {}).q)); },
+  
+  rp(m) {
+    R('wheel').transaction(w => {
+      w = w || {}; if (w.win) return w; w.r = w.r || {};
+      if (w.r[MK]) return w;
+      w.r[MK] = m;
+      const k = Object.keys(w.r);
+      if (k.length == 2) {
+        const x = w.r[k[0]], y = w.r[k[1]], tie = x === y, f = (x == 'rock' && y == 'scissors') || (x == 'paper' && y == 'rock') || (x == 'scissors' && y == 'paper');
+        delete w.r; w.msg = EM[x] + ' ضد ' + EM[y] + (tie ? ' — تعادل! العبوا تاني ⚡' : '');
+        if (!tie) w.win = f ? k[0] : k[1];
+      }
+      return w;
+    });
+  },
+  sp() {
+    R('wheel').transaction(w => { w = w || {}; const nextDare = nxt(wheelDaresBank.length, w.u, w.q); const s = Math.random() * 8 | 0; return { win: w.win || MK, spin: Date.now(), slice: s, q: nextDare.q, u: nextDare.u, dare: wheelDaresBank[nextDare.q] }; });
+  },
+  wr() { R('wheel').transaction(w => { w = w || {}; return { u: w.u || [], q: w.q || 0 }; }); },
+  
+  ss() { const t = ($('sbox') || {}).value; if (!t || !t.trim()) return; R('scenario').transaction(s => { s = s || {}; s.a = s.a || {}; if (Object.keys(s.a).length < 2) s.a[MK] = t.trim(); return s; }); },
+  sn() { R('scenario').transaction(s => nxt(scenarioBank.length, (s || {}).u, (s || {}).q)); },
+  
+  rx(k) { db.ref(base + 'chat/' + k + '/r').transaction(r => ({ '': '❤️', '❤️': '🥺', '🥺': '😂', '😂': '' }[r || ''])); },
+  
+  home() { const h = Q.get('home'); h ? location.href = h : window.close(); }
 };
-document.addEventListener('click', e => { const b=e.target.closest('[data-a]'); if(b && act[b.dataset.a]) act[b.dataset.a](b.dataset.v); });
+
+document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (b && act[b.dataset.a]) act[b.dataset.a](b.dataset.v); });
 
 // ================= الشات والردود والنقط المتحركة =================
-const tg = on => { if (db) db.ref(base+'typing/'+MK).set(on); };
+const tg = on => { if (db) db.ref(base + 'typing/' + MK).set(on); };
 let rep = null, CM = {};
 
 function setRep(k) {
   const m = CM[k]; if (!m) return;
-  rep = { u: m.u, t: String(m.t).slice(0,120) };
-  $('rbar').innerHTML = `<span><b>${esc(m.u===ME?'أنت':m.u)}</b>: ${esc(rep.t)}</span><button data-a="norep">✕</button>`;
-  $('rbar').style.display = 'flex';
-  $('inp').focus();
+  rep = { u: m.u, t: String(m.t).slice(0, 120) };
+  $('rbar').innerHTML = `<span><b>${esc(m.u === ME ? 'أنت' : m.u)}</b>: ${esc(rep.t)}</span><button data-a="norep">✕</button>`;
+  $('rbar').style.display = 'flex'; $('inp').focus();
 }
 function noRep() { rep = null; $('rbar').style.display = 'none'; }
 act.rep = setRep; act.norep = noRep;
@@ -403,17 +327,17 @@ function send() {
   i.value = '';
   const o = { u: ME, t, ts: firebase.database.ServerValue.TIMESTAMP };
   if (rep) o.rp = rep;
-  db.ref(base+'chat').push(o);
+  db.ref(base + 'chat').push(o);
   noRep(); tg(false);
 }
 
-// السحب يمين وشمال للرد في الشات
-(function() {
-  const a = $('msgs'); let x0, y0, el, dx=0, sw=false;
-  a.addEventListener('touchstart', e => { el=e.target.closest('[data-k]'); if(!el) return; x0=e.touches[0].clientX; y0=e.touches[0].clientY; dx=0; sw=false; }, {passive:true});
-  a.addEventListener('touchmove', e => { if(!el) return; const x=e.touches[0].clientX-x0, y=e.touches[0].clientY-y0; if(!sw && Math.abs(x)>10 && Math.abs(x)>Math.abs(y)*1.5) sw=true; if(sw) { dx=Math.max(-90, Math.min(90,x)); el.style.transform=`translateX(${dx}px)`; } }, {passive:true});
-  a.addEventListener('touchend', () => { if(!el) return; const t=el; el=null; if(sw && Math.abs(dx)>60) setRep(t.dataset.k); t.style.transition='transform .2s'; t.style.transform=''; setTimeout(()=>t.style.transition='', 220); sw=false; });
-  a.addEventListener('touchcancel', () => { if(!el) return; el.style.transform=''; el=null; sw=false; });
+// السحب للرد (Swipe to Reply)
+(function () {
+  const a = $('msgs'); let x0, y0, el, dx = 0, sw = false;
+  a.addEventListener('touchstart', e => { el = e.target.closest('[data-k]'); if (!el) return; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; sw = false; }, { passive: true });
+  a.addEventListener('touchmove', e => { if (!el) return; const x = e.touches[0].clientX - x0, y = e.touches[0].clientY - y0; if (!sw && Math.abs(x) > 10 && Math.abs(x) > Math.abs(y) * 1.5) sw = true; if (sw) { dx = Math.max(-90, Math.min(90, x)); el.style.transform = `translateX(${dx}px)`; } }, { passive: true });
+  a.addEventListener('touchend', () => { if (!el) return; const t = el; el = null; if (sw && Math.abs(dx) > 60) setRep(t.dataset.k); t.style.transition = 'transform .2s'; t.style.transform = ''; setTimeout(() => t.style.transition = '', 220); sw = false; });
+  a.addEventListener('touchcancel', () => { if (!el) return; el.style.transform = ''; el = null; sw = false; });
 })();
 
 function showChat(s) {
@@ -423,7 +347,7 @@ function showChat(s) {
     const m = c.val();
     if (m.u === 'system') { h += `<div class="sys">${esc(m.t)}</div>`; return; }
     const me = m.u === ME; CM[c.key] = m;
-    h += `<div class="m ${me ? 'me' : 'you'}" data-k="${c.key}"${me ? '' : ` data-a="rx" data-v="${c.key}"`}>${m.rp ? `<div class="rq"><b>${esc(m.rp.u===ME?'أنت':m.rp.u)}</b>${esc(m.rp.t)}</div>` : ''}${me ? '' : `<small>${esc(m.u)}</small>`}${esc(m.t)}<span class="ri" data-a="rep" data-v="${c.key}">↩</span>${m.r ? `<span class="rx">${m.r}</span>` : ''}</div>`;
+    h += `<div class="m ${me ? 'me' : 'you'}" data-k="${c.key}"${me ? '' : ` data-a="rx" data-v="${c.key}"`}>${m.rp ? `<div class="rq"><b>${esc(m.rp.u === ME ? 'أنت' : m.rp.u)}</b>${esc(m.rp.t)}</div>` : ''}${me ? '' : `<small>${esc(m.u)}</small>`}${esc(m.t)}<span class="ri" data-a="rep" data-v="${c.key}">↩</span>${m.r ? `<span class="rx">${m.r}</span>` : ''}</div>`;
   });
   el.innerHTML = h;
   if (low) el.scrollTop = el.scrollHeight;
@@ -431,26 +355,26 @@ function showChat(s) {
 
 function fail(m) { const e = $('err'); e.textContent = '⚠️ ' + m; e.style.display = 'block'; }
 window.onerror = m => fail(m);
+
 $('snd').onclick = send;
 $('inp').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 $('inp').addEventListener('input', () => { tg(true); clearTimeout(tt); tt = setTimeout(() => tg(false), 2500); });
 
 function startRealtimeListeners() {
   let first = true;
-  db.ref(base+'g').on('value', s => { 
-    G = s.val() || {}; 
-    if (first) { first = false; const w = G.wheel || {}; lastSpin = w.spin || 0; if(w.spin) rot = 2160 - ((w.slice || 0) * 45 + 22.5); } 
-    draw(); 
+  db.ref(base + 'g').on('value', s => {
+    G = s.val() || {};
+    if (first) { first = false; const w = G.wheel || {}; lastSpin = w.spin || 0; if (w.spin) rot = 2160 - ((w.slice || 0) * 45 + 22.5); }
+    draw();
   });
-  db.ref(base+'chat').limitToLast(200).on('value', showChat);
-  db.ref(base+'typing/'+YK).on('value', s => $('typ').classList.toggle('show', s.val() === true));
-  db.ref(base+'typing/'+MK).onDisconnect().set(false);
+  db.ref(base + 'chat').limitToLast(200).on('value', showChat);
+  db.ref(base + 'typing/' + YK).on('value', s => $('typ').classList.toggle('show', s.val() === true));
+  db.ref(base + 'typing/' + MK).onDisconnect().set(false);
 }
 
 // ================= تهيئة Firebase والاتصال المباشر =================
-draw();
 try {
-  if (!FB.databaseURL) throw new Error('حط إعدادات Firebase في أول السكريبت (FB) عشان اللعب يتزامن');
+  if (!FB.databaseURL) throw new Error('حط إعدادات Firebase في أول السكريبت');
   firebase.initializeApp(FB);
   db = firebase.database();
 
@@ -463,17 +387,20 @@ try {
         startRealtimeListeners();
       } else {
         gate.style.display = 'flex';
-        if (user) { msg.style.display = 'block'; msg.textContent = '⛔ الإيميل ده ('+user.email+') مش مسموح ليه بالدخول! الساحة خاصة بمصطفى وفريال.'; auth.signOut(); }
+        if (user) { msg.style.display = 'block'; msg.textContent = '⛔ الإيميل ده غير مصرح له بالدخول!'; auth.signOut(); }
       }
     });
     $('googleLoginBtn').onclick = () => {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(err => { msg.style.display = 'block'; msg.textContent = '⚠️ حصل خطأ في تسجيل الدخول: ' + err.message; });
+      auth.signInWithPopup(provider).catch(err => { msg.style.display = 'block'; msg.textContent = '⚠️ ' + err.message; });
     };
   } else {
     startRealtimeListeners();
   }
 } catch (e) { fail(e.message); }
+
+// إضافة سكريبت اللودو الخارجي في النهاية زى ما طلبت
 </script>
+<script src="extras.js"></script>
 </body>
 </html>
